@@ -48,6 +48,19 @@ button,input,select{font:inherit}
 :focus-visible{outline:3px solid var(--fjord);outline-offset:3px;border-radius:4px}
 .wrap{max-width:var(--wrap);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 section{scroll-margin-top:76px}
+/* Oleaje: bordes de sección con forma de ola + tarjetas que ondulan al deslizar */
+.waved{position:relative}
+.wave{position:absolute;left:0;width:100%;height:clamp(26px,4vw,56px);display:block;pointer-events:none;z-index:3}
+.wave path{fill:var(--wave-fill,var(--bg))}
+.wave.top{bottom:calc(100% - 1px)}
+.wave.bottom{bottom:-1px}
+.dest{--wave-fill:var(--sand-2)}
+.nt{--wave-fill:var(--band)}
+.why{--wave-fill:var(--sand-2)}
+.contact{--wave-fill:var(--deep)}
+footer{--wave-fill:var(--band)}
+.hero,#paquetes,#natura,#galeria{--wave-fill:var(--bg)}
+.swell{translate:0 var(--wy,0px);will-change:translate}
 .sec{padding-block:clamp(64px,9vw,112px)}
 .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--forest);display:flex;gap:10px;align-items:center}
 .eyebrow::before{content:"";width:28px;height:2px;background:currentColor}
@@ -216,7 +229,7 @@ header.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;backgroun
 @media (max-width:460px){.caps{grid-template-columns:1fr}}
 
 /* Why */
-.why{background:var(--sand-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.why{background:var(--sand-2)}
 .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:44px;border-left:1px solid var(--line)}
 .why-item{padding:8px 26px 10px;border-right:1px solid var(--line)}
 .why-item .ico{width:30px;height:30px;color:var(--forest)}
@@ -1030,6 +1043,71 @@ $('#opts').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(
 
 /* ---------- Inicio ---------- */
 renderNav();renderDest();renderPk();renderExp();renderGal();renderInfo();paint();
+
+/* ---------- Oleaje al deslizar ---------- */
+(function(){
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const NS='http://www.w3.org/2000/svg';
+  const waves=[];
+  function addWave(el,pos,k,seed){
+    if(!el||el.querySelector(':scope > .wave.'+pos))return;
+    el.classList.add('waved');
+    const svg=document.createElementNS(NS,'svg');svg.setAttribute('class','wave '+pos);svg.setAttribute('viewBox','0 0 1440 60');svg.setAttribute('preserveAspectRatio','none');svg.setAttribute('aria-hidden','true');
+    const path=document.createElementNS(NS,'path');svg.appendChild(path);el.appendChild(svg);
+    waves.push({path,pos,k,seed});
+  }
+  addWave(document.querySelector('.hero'),'bottom',1.6,0);
+  document.querySelectorAll('#destinos,#paquetes,#experiencias,.nt,#natura,.why,#galeria,#info,.contact').forEach((el,i)=>addWave(el,'top',1.3+i*.17,i*1.7));
+  addWave(document.querySelector('footer'),'top',1.8,4);
+
+  // perfil de la ola: suma de dos senos para que no se vea mecánica
+  function wavePath(w,phase,amp){
+    const N=48;let d='';
+    for(let j=0;j<=N;j++){
+      const x=j/N*1440, t=j/N*Math.PI*2;
+      let y=30+amp*Math.sin(t*w.k+phase+w.seed)+amp*.35*Math.sin(t*w.k*2.3-phase*1.4+w.seed);
+      if(w.pos==='bottom')y=60-y+30; // invierte para que la cresta mire hacia arriba
+      d+=(j?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);
+    }
+    return w.pos==='top'?d+'L1440 60L0 60Z':d+'L1440 60L0 60Z';
+  }
+
+  const SEL='.dcard,.pk,.why-item,.info,.gal button,.unit,.pillar,.timeline li,.season,.strip button,.nt-act';
+  let items=[];
+  function collect(){items=[...document.querySelectorAll(SEL)].filter(el=>el.offsetParent!==null);items.forEach(el=>el.classList.add('swell'))}
+  collect();
+  new MutationObserver(()=>{clearTimeout(collect.t);collect.t=setTimeout(collect,60)}).observe(document.body,{childList:true,subtree:true});
+
+  let lastY=scrollY,lastT=performance.now(),vel=0,energy=0,phase=0,dir=1,running=false;
+  function frame(){
+    const now=performance.now();const dt=Math.max(.008,Math.min(64,now-lastT)/1000);lastT=now;
+    const y=scrollY,dy=y-lastY;lastY=y;
+    const v=dy/Math.max(dt,.001);                     // px/s
+    vel+= (v-vel)*Math.min(1,dt*10);
+    if(Math.abs(dy)>.5)dir=dy>0?1:-1;
+    const target=Math.min(1,Math.abs(vel)/1400);
+    energy+= (target-energy)*Math.min(1,dt*(target>energy?6:2.2)); // sube rápido, se calma lento
+    phase+= dt*(2.2+energy*5)*dir;
+    // tarjetas: cada una desfasada según su posición → ola que recorre la pantalla
+    const vh=innerHeight, amp=18*energy;
+    for(const el of items){
+      const r=el.getBoundingClientRect();
+      if(r.bottom<-100||r.top>vh+100){if(el._wy){el.style.setProperty('--wy','0px');el._wy=0}continue}
+      const off=Math.sin(phase-(r.left/innerWidth)*Math.PI*1.6-(r.top/vh)*Math.PI*.9)*amp;
+      if(Math.abs(off-(el._wy||0))>.15){el.style.setProperty('--wy',off.toFixed(2)+'px');el._wy=off}
+    }
+    const wamp=5+energy*17;
+    for(const w of waves){const r=w.path.ownerSVGElement.getBoundingClientRect();if(r.bottom<0||r.top>vh)continue;w.path.setAttribute('d',wavePath(w,phase,wamp))}
+    if(energy>.004||Math.abs(vel)>5){requestAnimationFrame(frame)}
+    else{running=false;for(const el of items){if(el._wy){el.style.setProperty('--wy','0px');el._wy=0}}}
+  }
+  function kick(){if(!running){running=true;lastT=performance.now()-16;requestAnimationFrame(frame)}}
+  addEventListener('scroll',kick,{passive:true});
+  // dibuja las olas en reposo
+  waves.forEach(w=>w.path.setAttribute('d',wavePath(w,0,5)));
+  // cuando se abre el detalle de un paquete, agrega su ola de pie de página y recolecta
+  addEventListener('resize',()=>waves.forEach(w=>w.path.setAttribute('d',wavePath(w,phase,5))));
+})();
 </script>
 
 </body>
