@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="img/logo.png">
 <style>
 :root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -92,7 +93,21 @@ header.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;backgroun
 /* Hero */
 .hero{position:relative;color:#fff;min-height:clamp(540px,82vh,780px);display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
 .hero .art{position:absolute;inset:0;z-index:-2}
-.hero .art svg{width:100%;height:100%;display:block}
+.hero .art svg,.hero .art img{width:100%;height:100%;display:block}
+.hero .art img{object-fit:cover;object-position:60% 45%}
+.hero-logo{display:block;width:clamp(92px,11vw,142px);height:auto;aspect-ratio:1;border-radius:50%;box-shadow:0 14px 34px -10px rgba(0,0,0,.55);margin-bottom:22px}
+[data-img]>img{width:100%;height:100%;object-fit:cover;display:block}
+.photo[data-img]>img{position:absolute;inset:0}
+.brand-logo{width:42px;height:42px;border-radius:50%;flex:none;box-shadow:0 0 0 1px var(--line)}
+.f-logo{width:clamp(84px,9vw,112px);height:auto;aspect-ratio:1;border-radius:50%;margin-bottom:18px;display:block}
+.gal-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px}
+.gal-tabs button{border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px;cursor:pointer}
+.gal-tabs button[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:var(--forest-ink)}
+.gal-tabs small{font-family:var(--mono);opacity:.7;margin-left:6px}
+.strip{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:22px}
+.strip button{border:0;padding:0;border-radius:10px;overflow:hidden;aspect-ratio:3/2;cursor:zoom-in;background:var(--sand)}
+.strip img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.strip button:hover img{transform:scale(1.05)}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(10,20,14,.15) 0%,rgba(10,20,14,.05) 35%,rgba(10,20,14,.72) 100%)}
 .hero-in{padding-block:72px 64px;width:100%}
 .hero .coords{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;opacity:.85;display:flex;gap:16px;flex-wrap:wrap}
@@ -103,7 +118,7 @@ header.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;backgroun
 @media (prefers-reduced-motion:no-preference){
   .hero-in>*{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
   .hero-in>*:nth-child(2){animation-delay:.08s}.hero-in>*:nth-child(3){animation-delay:.16s}.hero-in>*:nth-child(4){animation-delay:.24s}.hero-in>*:nth-child(5){animation-delay:.32s}
-  .hero .art svg{animation:drift 30s ease-in-out infinite alternate}
+  .hero .art svg,.hero .art img{animation:drift 30s ease-in-out infinite alternate}
 }
 @keyframes rise{from{transform:translateY(18px);opacity:.01}to{transform:none;opacity:1}}
 @keyframes drift{from{transform:scale(1.02)}to{transform:scale(1.08) translateX(-1%)}}
@@ -213,17 +228,19 @@ header.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;backgroun
 /* Gallery */
 .gal{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:200px;gap:12px;margin-top:44px}
 .gal button{border:0;padding:0;cursor:zoom-in;border-radius:var(--r);overflow:hidden;position:relative;background:var(--sand)}
-.gal button svg{width:100%;height:100%;display:block;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
-.gal button:hover svg{transform:scale(1.06)}
-.gal .g1{grid-column:span 2;grid-row:span 2}
-.gal .g4{grid-column:span 2}
+.gal button img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.gal button:hover img{transform:scale(1.06)}
+.gal .big{grid-column:span 2;grid-row:span 2}
+.gal .wide{grid-column:span 2}
 .gal .cap{position:absolute;left:10px;bottom:10px;font-family:var(--mono);font-size:11.5px;background:rgba(15,22,18,.62);color:#fff;padding:4px 8px;border-radius:5px}
-@media (max-width:860px){.gal{grid-template-columns:repeat(2,1fr);grid-auto-rows:170px}.gal .g4{grid-column:span 2}}
-@media (max-width:460px){.gal{grid-template-columns:1fr}.gal .g1,.gal .g4{grid-column:auto;grid-row:auto}}
+@media (max-width:860px){.gal{grid-template-columns:repeat(2,1fr);grid-auto-rows:170px}}
+@media (max-width:460px){.gal{grid-template-columns:1fr;grid-auto-rows:220px}.gal .big,.gal .wide{grid-column:auto;grid-row:auto}}
+@media (max-width:700px){.hero .art img{object-position:66% 50%}}
 .lightbox{position:fixed;inset:0;z-index:80;background:rgba(6,10,8,.9);display:grid;place-items:center;padding:max(20px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(20px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .lightbox figure{margin:0;width:min(1100px,100%)}
 .lightbox .frame{aspect-ratio:16/9;border-radius:10px;overflow:hidden}
-.lightbox .frame svg{width:100%;height:100%;display:block}
+.lightbox .frame svg,.lightbox .frame img{width:100%;height:100%;display:block}
+.lightbox .frame{background:#0b0f0d}.lightbox .frame img{object-fit:contain}
 .lightbox figcaption{color:#E8EBE5;font-family:var(--mono);font-size:13px;margin-top:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .lb-close{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));background:rgba(255,255,255,.1);border:0;color:#fff;border-radius:50%;width:44px;height:44px;display:grid;place-items:center;cursor:pointer}
 .lb-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:0;color:#fff;border-radius:50%;width:44px;height:44px;display:grid;place-items:center;cursor:pointer}
@@ -390,7 +407,9 @@ footer{background:var(--band);color:var(--band-fg);padding-block:64px 36px}
 .chat-note{font-size:11.5px;color:var(--muted);text-align:center;padding:6px 0 10px;background:var(--surface);font-family:var(--mono)}
 .fab{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:60;background:#17321F;color:#fff;border:0;border-radius:999px;padding:12px 18px 12px 12px;display:flex;gap:10px;align-items:center;cursor:pointer;box-shadow:0 14px 30px -14px rgba(5,20,10,.7);font-weight:700}
 .fab .avatar{width:32px;height:32px}
-@media (max-width:520px){.fab span{display:none}.fab{padding:12px}}
+@media (max-width:520px){.fab>span:last-child{display:none}.fab{padding:12px}}
+@media (max-width:560px){.brand{font-size:19px;gap:8px;letter-spacing:.04em;min-width:0}.brand-logo{width:34px;height:34px}.nav-in{gap:10px}}
+@media (max-width:360px){.brand{font-size:16px}}
 </style>
 </head>
 <body>
@@ -431,7 +450,7 @@ footer{background:var(--band);color:var(--band-fg);padding-block:64px 36px}
 <header class="nav" id="top">
   <div class="wrap nav-in">
     <button class="brand" type="button" data-go="inicio" aria-label="Dreamers Travel, inicio">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 27 11 9l4 7 4-11 11 22Z" fill="var(--forest)"/><path d="M15 16l2.5 4.5L19 5" fill="none" stroke="var(--bg)" stroke-width="1.5"/></svg>
+      <img class="brand-logo" src="img/logo.png" alt="" width="42" height="42">
       DREAMERS TRAVEL
     </button>
     <ul class="menu" id="menu"></ul>
@@ -453,8 +472,9 @@ footer{background:var(--band);color:var(--band-fg);padding-block:64px 36px}
 <main id="home">
   <!-- HERO -->
   <section class="hero" id="inicio">
-    <div class="art" data-scene="torres" data-seed="3"></div>
+    <div class="art"><img src="img/caballo-1.jpg" alt="Jinetes frente al lago Pehoé y los Cuernos del Paine" fetchpriority="high"></div>
     <div class="wrap hero-in">
+      <img class="hero-logo" src="img/logo.png" alt="Logo de Dreamers Travel: Tu próximo destino, en buenas manos" width="142" height="142">
       <div class="coords"><span>50°56′ S · 72°58′ W</span><span>Parque Nacional Torres del Paine</span><span>Región de Magallanes</span></div>
       <h1 data-i18n="hero.title">Vive la Patagonia a tu manera</h1>
       <p class="sub" data-i18n="hero.sub">Experiencias de naturaleza y aventura diseñadas para descubrir Torres del Paine de una forma inolvidable.</p>
@@ -479,7 +499,7 @@ footer{background:var(--band);color:var(--band-fg);padding-block:64px 36px}
           <div class="pillar"><svg class="ico"><use href="#i-plane"/></svg><div><b>Experiencias personalizadas</b><span>Ajustamos ritmo, alojamiento y actividades a cada grupo.</span></div></div>
         </div>
       </div>
-      <div class="photo about-photo" data-scene="sendero" data-seed="7"><span class="cap">Sendero a Mirador Base Torres</span></div>
+      <div class="photo about-photo" data-scene="sendero" data-seed="7" data-img="img/caballo-3.jpg" data-label="Bienvenida a viajeros con traslado de Nature’s Towers"><span class="cap">Bienvenida y traslado a Nature’s Towers</span></div>
     </div>
   </section>
 
@@ -549,7 +569,7 @@ footer{background:var(--band);color:var(--band-fg);padding-block:64px 36px}
         </div>
       </div>
       <button class="nt-act" type="button" data-offer="cabalgata">
-        <span class="thumb" data-scene="cabalgata" data-seed="3" data-label="Cabalgata"></span>
+        <span class="thumb" data-scene="cabalgata" data-seed="3" data-img="img/caballo-4.jpg" data-label="Cabalgata"></span>
         <span class="txt"><small>Actividad desde el ecocamp</small><b>Descubriendo la Patagonia a caballo</b><span class="p">≈ 3 horas · desde US$145 por persona</span></span>
         <svg class="ico"><use href="#i-arrow"/></svg>
       </button>
@@ -611,6 +631,7 @@ footer{background:var(--band);color:var(--band-fg);padding-block:64px 36px}
     <div class="wrap">
       <div class="eyebrow" data-i18n="gal.eyebrow">Galería</div>
       <h2 class="h2" data-i18n="gal.title">La Patagonia en imágenes</h2>
+      <div class="gal-tabs" id="galTabs" role="group" aria-label="Filtrar galería"></div>
       <div class="gal" id="gal"></div>
     </div>
   </section>
@@ -660,7 +681,7 @@ footer{background:var(--band);color:var(--band-fg);padding-block:64px 36px}
 <footer>
   <div class="wrap">
     <div class="f-top">
-      <div><div class="f-brand">DREAMERS<br>TRAVEL</div><p class="f-tag" data-i18n="footer.tag">Experiencias que conectan viajeros con la Patagonia.</p></div>
+      <div><img class="f-logo" src="img/logo.png" alt="" width="112" height="112" loading="lazy"><div class="f-brand">DREAMERS<br>TRAVEL</div><p class="f-tag" data-i18n="footer.tag">Experiencias que conectan viajeros con la Patagonia.</p></div>
       <nav class="f-links" id="flinks" aria-label="Pie de página"></nav>
     </div>
     <div class="f-bot"><span>© 2026 Dreamers Travel</span><span>Prototipo conceptual académico</span></div>
@@ -758,7 +779,8 @@ const SCENES={
     hills(890,30,seed+5,'#22381F')}
 };
 function sceneSVG(name,seed=1,label=''){return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${label||name}">${SCENES[name](seed)}</svg>`}
-function paint(root=document){root.querySelectorAll('[data-scene]').forEach(el=>{if(el.dataset.painted)return;el.insertAdjacentHTML('afterbegin',sceneSVG(el.dataset.scene,+el.dataset.seed||1,el.dataset.label||''));el.dataset.painted=1})}
+function paint(root=document){root.querySelectorAll('[data-scene]').forEach(el=>{if(el.dataset.painted)return;const lb=(el.dataset.label||'').replace(/"/g,'&quot;');el.insertAdjacentHTML('afterbegin',el.dataset.img?`<img src="${el.dataset.img}" alt="${lb}" loading="lazy" decoding="async">`:sceneSVG(el.dataset.scene,+el.dataset.seed||1,el.dataset.label||''));el.dataset.painted=1})}
+const imgAttr=o=>o&&o.img?` data-img="${o.img}"`:'';
 
 /* ---------- i18n (interfaz principal) ---------- */
 const I18N={
@@ -775,27 +797,27 @@ const t=k=>(I18N[LANG]&&I18N[LANG][k])||I18N.es[k]||k;
 /* ---------- Datos ---------- */
 const NAV=[['inicio','nav.inicio'],['nosotros','nav.nosotros'],['destinos','nav.destinos'],['paquetes','nav.paquetes'],['experiencias','nav.exp'],['natures-towers','nav.nt'],['natura','nav.natura'],['contacto','nav.contacto']];
 const DEST=[
-  {n:'Mirador Base Torres',scene:'torres',seed:5,alt:'≈ 870 m s.n.m.',km:'19 km ida y vuelta',d:'Las tres torres de granito sobre una laguna glaciar.'},
-  {n:'Valle del Francés',scene:'valle',seed:2,alt:'≈ 700 m s.n.m.',km:'Glaciares colgantes',d:'Un anfiteatro rodeado por los Cuernos del Paine.'},
-  {n:'Glaciar Grey',scene:'glaciar',seed:4,alt:'Lago Grey',km:'Campo de Hielo Sur',d:'Paredes de hielo azul y témpanos flotando en el lago.'},
-  {n:'Macizo Paine',scene:'macizo',seed:8,alt:'Paine Grande ≈ 2.884 m',km:'Circuito O',d:'El cordón completo que da forma al parque.'}
+  {n:'Mirador Base Torres',img:'img/base-torres-1.jpg',scene:'torres',seed:5,alt:'≈ 870 m s.n.m.',km:'19 km ida y vuelta',d:'Las tres torres de granito sobre una laguna glaciar.'},
+  {n:'Valle del Francés',img:'img/base-torres-3.jpg',scene:'valle',seed:2,alt:'≈ 700 m s.n.m.',km:'Glaciares colgantes',d:'Un anfiteatro rodeado por los Cuernos del Paine.'},
+  {n:'Glaciar Grey',img:'img/grey-1.jpg',scene:'glaciar',seed:4,alt:'Lago Grey',km:'Campo de Hielo Sur',d:'Paredes de hielo azul y témpanos flotando en el lago.'},
+  {n:'Macizo Paine',img:'img/noche-4.jpg',scene:'macizo',seed:8,alt:'Paine Grande ≈ 2.884 m',km:'Circuito O',d:'El cordón completo que da forma al parque.'}
 ];
 const PK=[
-  {id:'w-clasico',tag:'Más elegido',name:'Circuito W Clásico',dur:'4 – 5 días',days:'4–5 días',level:'Intermedio',price:950,scene:'torres',seed:11,km:'≈ 80 km',
+  {id:'w-clasico',img:'img/base-torres-2.jpg',tag:'Más elegido',name:'Circuito W Clásico',dur:'4 – 5 días',days:'4–5 días',level:'Intermedio',price:950,scene:'torres',seed:11,km:'≈ 80 km',
    short:'Recorre los principales sectores del Circuito W y descubre algunos de los paisajes más representativos de Torres del Paine.',
    inc:['Recorrido por tres valles principales','Mirador Base Torres','Valle del Francés','Glaciar Grey','Alojamiento en refugios o campamentos autorizados','Orientación para el recorrido'],
    long:['El Circuito W es la ruta más conocida de Torres del Paine. En pocos días conecta los tres grandes hitos del parque: las torres de granito, el Valle del Francés y el frente del Glaciar Grey.','Caminarás entre bosques de lenga, ríos de deshielo y lagos de color turquesa, durmiendo en refugios o campamentos autorizados por CONAF. Dreamers Travel coordina reservas, horarios y la orientación de cada tramo.'],
    it:[['Llegada','Traslado y recepción.','Puerto Natales → sector Las Torres'],['Base Torres','Experiencia de trekking hacia el sector de Base Torres.','≈ 19 km · 8–10 h'],['Valle del Francés','Recorrido por uno de los sectores más reconocidos del parque.','≈ 20 km · 8–9 h'],['Glaciar Grey','Experiencia en el sector del Glaciar Grey.','≈ 22 km · 7–8 h'],['Regreso','Salida y traslado.','Catamarán Pudeto → Puerto Natales']],
    no:['Vuelos a Punta Arenas o Puerto Natales','Entrada al parque (CONAF)','Seguro de viaje','Equipo personal de trekking','Propinas y gastos personales'],
    reco:['Entrena caminatas de 6–8 horas antes del viaje','Reserva con 3–4 meses de anticipación en temporada alta','Lleva capas: el clima cambia varias veces al día']},
-  {id:'w-premium',tag:'Comodidad',name:'Circuito W Premium',dur:'4 – 5 días',days:'4–5 días',level:'Intermedio',price:1120,scene:'valle',seed:9,km:'≈ 80 km',
+  {id:'w-premium',img:'img/grey-2.jpg',tag:'Comodidad',name:'Circuito W Premium',dur:'4 – 5 días',days:'4–5 días',level:'Intermedio',price:1120,scene:'valle',seed:9,km:'≈ 80 km',
    short:'Una versión más completa del Circuito W, incorporando servicios adicionales para disfrutar de la experiencia con mayor comodidad.',
    inc:['Circuito W','Alojamiento','Alimentación según programa','Traslados','Orientación durante la experiencia','Servicios complementarios'],
    long:['La misma ruta del Circuito W, con la logística completamente resuelta. Incluye alojamiento con camas armadas, comidas según programa y traslados coordinados entre sectores.','Pensado para viajeros que quieren vivir el trekking más famoso de la Patagonia con menos peso en la mochila y más tiempo para disfrutar del paisaje.'],
    it:[['Llegada','Recepción en Puerto Natales y traslado al alojamiento en el parque.','≈ 2 h de traslado'],['Base Torres','Trekking al Mirador Base Torres con almuerzo de ruta incluido.','≈ 19 km · 8–10 h'],['Navegación y Valle del Francés','Cruce del lago Pehoé en catamarán y caminata al Valle del Francés.','≈ 18 km · 7–8 h'],['Glaciar Grey','Caminata al mirador del glaciar y regreso al refugio.','≈ 22 km · 7–8 h'],['Regreso','Traslado a Puerto Natales.','Salida en la mañana']],
    no:['Vuelos nacionales o internacionales','Entrada al parque (CONAF)','Seguro de viaje','Bebidas alcohólicas','Gastos personales'],
    reco:['Ideal para quienes hacen su primer trekking de varios días','Consulta por dietas especiales al reservar','Usa bastones para cuidar rodillas en los descensos']},
-  {id:'circuito-o',tag:'Expedición',name:'Circuito O – Macizo Paine',dur:'7 – 9 días',days:'7–9 días',level:'Avanzado',price:1960,scene:'macizo',seed:3,km:'≈ 120 km',
+  {id:'circuito-o',img:'img/base-torres-4.jpg',tag:'Expedición',name:'Circuito O – Macizo Paine',dur:'7 – 9 días',days:'7–9 días',level:'Avanzado',price:1960,scene:'macizo',seed:3,km:'≈ 120 km',
    short:'Una experiencia para quienes buscan recorrer el circuito completo alrededor del Macizo Paine y explorar sectores más remotos del parque.',
    inc:['Circuito completo','Trekking de varios días','Alojamiento en refugios o campamentos','Orientación del recorrido','Experiencia en sectores remotos','Apoyo logístico'],
    long:['El Circuito O rodea todo el Macizo Paine. Suma al Circuito W el sector norte del parque, más aislado y con menos visitantes, y el cruce del Paso John Gardner con vista al Campo de Hielo Patagónico Sur.','Es un programa exigente que requiere buena condición física. Dreamers Travel organiza la secuencia de campamentos y el apoyo logístico durante todo el recorrido.'],
@@ -811,7 +833,7 @@ const PK=[
    reco:['Ideal para parejas, familias y viajeros que prefieren comodidad','Indica tu nivel de caminata para ajustar las salidas','Lleva gorro y guantes para las noches frescas']}
 ];
 const OFFERS=[
-  {id:'cabalgata',kind:'Actividad',tag:'Actividad · Nature’s Towers',title:'Descubriendo la Patagonia a caballo',scene:'cabalgata',seed:7,meta:'≈ 3 h · 5–7 personas',
+  {id:'cabalgata',img:'img/caballo-4.jpg',photos:['img/caballo-1.jpg','img/caballo-2.jpg','img/caballo-3.jpg','img/caballo-4.jpg'],kind:'Actividad',tag:'Actividad · Nature’s Towers',title:'Descubriendo la Patagonia a caballo',scene:'cabalgata',seed:7,meta:'≈ 3 h · 5–7 personas',
    short:'Vive la esencia patagónica recorriendo sus paisajes a caballo.',
    card:'Cabalgata guiada por la estepa, con vista a montañas y lagunas cercanas a Torres del Paine. No necesitas experiencia previa.',
    price:{from:'Desde',value:145,unit:'por adulto'},
@@ -845,7 +867,14 @@ const OFFERS=[
    booking:['La tarifa base permite pagos en hasta 3 cuotas, de acuerdo con las condiciones de contratación.','Las reservas están sujetas a disponibilidad.','Los cambios de fecha se gestionan mediante reprogramación, según las condiciones aplicables al servicio.'],
    related:{id:'cabalgata',label:'Actividad',title:'Descubriendo la Patagonia a caballo',text:'Cabalgata guiada de ≈ 3 horas con salida desde Nature’s Towers. Desde US$145 por persona.',btn:'Ver cabalgata'}}
 ];
-const GAL=[['torres',21,'Torres del Paine al amanecer'],['torres',4,'Base Torres'],['valle',6,'Valle del Francés'],['glaciar',3,'Glaciar Grey'],['domo',8,'Domos de Nature’s Towers'],['sendero',12,'Senderos del Circuito W'],['macizo',14,'Patagonia · Macizo Paine']];
+const GCATS=['Base Torres Trekking Expedición','Glaciar Grey','Descubriendo la Patagonia a caballo','Patagonia Night Experience'];
+const GAL=[
+  ['img/base-torres-1.jpg',0,'Mirador Base Torres'],['img/base-torres-2.jpg',0,'Celebración frente a las torres'],['img/base-torres-3.jpg',0,'Ascenso con vista a los Cuernos del Paine'],['img/base-torres-4.jpg',0,'Briefing de seguridad en Nature’s Towers'],
+  ['img/grey-1.jpg',1,'Navegación Grey III frente al glaciar'],['img/grey-2.jpg',1,'Paredes de hielo azul del Glaciar Grey'],['img/grey-3.jpg',1,'Observación a bordo del Grey III'],['img/grey-4.jpg',1,'Recorrido: check-in, embarque y retorno'],
+  ['img/caballo-1.jpg',2,'Cabalgata hacia el lago y los Cuernos'],['img/caballo-2.jpg',2,'Asignación de caballos e instrucciones'],['img/caballo-3.jpg',2,'Bienvenida y traslado de Nature’s Towers'],['img/caballo-4.jpg',2,'Parada panorámica con baqueano'],
+  ['img/noche-1.jpg',3,'Campamento de observación bajo la Vía Láctea'],['img/noche-2.jpg',3,'Caminata nocturna por la estepa'],['img/noche-3.jpg',3,'Observación con telescopio'],['img/noche-4.jpg',3,'Constelaciones sobre los Cuernos del Paine']
+].map(([src,c,cap])=>({src,cat:c,cap}));
+let GFILTER=-1, LBSET=[];
 const INFO=[
   ['i-pack','Qué llevar','Mochila de 40–60 L, chaqueta impermeable, capa térmica, gorro, guantes, bloqueador solar y botas ya usadas.','Peso ideal de mochila: ≤ 20 % de tu peso'],
   ['i-cloud','Clima y recomendaciones','En temporada alta las temperaturas van de 2 a 18 °C. El viento puede superar los 80 km/h.','Temporada alta: diciembre – febrero'],
@@ -879,12 +908,16 @@ function renderNav(){
   $('#flinks').innerHTML=NAV.map(([id,k])=>`<a href="#${id}" data-go="${id}">${t(k)}</a>`).join('');
   document.querySelectorAll('.lang').forEach(g=>{g.innerHTML=[['es','🇪🇸','ES'],['en','🇺🇸','EN'],['pt','🇧🇷','PT']].map(([c,f,l])=>`<button type="button" data-lang="${c}" aria-pressed="${c===LANG}">${f} ${l}</button>`).join('')});
 }
-function renderDest(){$('#destGrid').innerHTML=DEST.map(d=>`<article class="dcard"><div class="art" data-scene="${d.scene}" data-seed="${d.seed}" data-label="${d.n}"></div><div class="body"><h3>${d.n}</h3><p>${d.d}</p><div class="meta"><span>${d.alt}</span><span>${d.km}</span></div></div></article>`).join('')}
-function renderPk(){$('#pkGrid').innerHTML=PK.map(p=>`<article class="pk"><div class="photo" data-scene="${p.scene}" data-seed="${p.seed}" data-label="${p.name}"><span class="tag">${p.tag}</span></div>
+function renderDest(){$('#destGrid').innerHTML=DEST.map(d=>`<article class="dcard"><div class="art" data-scene="${d.scene}" data-seed="${d.seed}"${imgAttr(d)} data-label="${d.n}"></div><div class="body"><h3>${d.n}</h3><p>${d.d}</p><div class="meta"><span>${d.alt}</span><span>${d.km}</span></div></div></article>`).join('')}
+function renderPk(){$('#pkGrid').innerHTML=PK.map(p=>`<article class="pk"><div class="photo" data-scene="${p.scene}" data-seed="${p.seed}"${imgAttr(p)} data-label="${p.name}"><span class="tag">${p.tag}</span></div>
   <div class="pk-body"><div class="pk-top"><h3>${p.name}</h3><span class="dur">${p.dur} · ${p.km}</span></div><p>${p.short}</p>
   <ul class="inc" aria-label="${t('pk.inc')}">${p.inc.map(i=>`<li>${ico('i-check')}<span>${i}</span></li>`).join('')}</ul>
   <div class="pk-foot"><div class="price"><small>${t('pk.from')}</small><b class="mono">${money(p.price)}</b> <span>${t('pk.pp')}</span></div><a class="btn btn-primary" href="#${p.id}" data-pk="${p.id}">${t('pk.view')}${ico('i-arrow')}</a></div></div></article>`).join('')}
-function renderGal(){$('#gal').innerHTML=GAL.map((g,i)=>`<button type="button" class="g${i+1}" data-gi="${i}" aria-label="Ampliar: ${g[2]}">${sceneSVG(g[0],g[1],g[2])}<span class="cap">${g[2]}</span></button>`).join('')}
+function galItems(){return GFILTER<0?GAL:GAL.filter(g=>g.cat===GFILTER)}
+function renderGal(){
+  $('#galTabs').innerHTML=[[-1,'Todas',GAL.length],...GCATS.map((c,i)=>[i,c,GAL.filter(g=>g.cat===i).length])].map(([i,l,n])=>`<button type="button" data-gcat="${i}" aria-pressed="${i===GFILTER}">${l}<small>${n}</small></button>`).join('');
+  $('#gal').innerHTML=galItems().map((g,i)=>`<button type="button" class="${i%4===0?'big':i%4===3?'wide':''}" data-gi="${i}" aria-label="Ampliar: ${g.cap}"><img src="${g.src}" alt="${g.cap}" loading="lazy" decoding="async"><span class="cap">${GCATS[g.cat]}</span></button>`).join('');
+}
 function renderInfo(){$('#infoGrid').innerHTML=INFO.map(([i,h,p,f])=>`<article class="info">${ico(i)}<h3>${h}</h3><p>${p}</p><div class="fact">${f}</div></article>`).join('')}
 function applyI18n(){document.documentElement.lang=LANG;document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));renderNav();renderPk();renderExp();paint()}
 
@@ -892,7 +925,7 @@ function applyI18n(){document.documentElement.lang=LANG;document.querySelectorAl
 function showDetail(id){
   const p=PK.find(x=>x.id===id);if(!p)return;
   const d=$('#detail');
-  d.innerHTML=`<section class="d-hero"><div class="art" data-scene="${p.scene}" data-seed="${p.seed+20}" data-label="${p.name}"></div><div class="wrap">
+  d.innerHTML=`<section class="d-hero"><div class="art" data-scene="${p.scene}" data-seed="${p.seed+20}"${imgAttr(p)} data-label="${p.name}"></div><div class="wrap">
     <button class="back" type="button" data-back>${ico('i-left')}Volver a paquetes</button>
     <div class="eyebrow" style="color:#CFE6D4;margin-top:26px">${p.tag} · Torres del Paine</div><h1>${p.name}</h1></div></section>
   <div class="wrap"><div class="facts"><div><small>Duración</small><b>${p.days}</b></div><div><small>Destino</small><b>Torres del Paine</b></div><div><small>Nivel</small><b>${p.level}</b></div><div><small>Precio</small><b>Desde ${money(p.price)} <span style="font-weight:400;font-size:14px;color:var(--muted)">por persona</span></b></div></div>
@@ -917,20 +950,21 @@ function goHome(target){
 }
 
 /* ---------- Experiencias ---------- */
-function renderExp(){$('#expGrid').innerHTML=OFFERS.map(o=>`<article class="pk"><div class="photo" data-scene="${o.scene}" data-seed="${o.seed}" data-label="${o.title}"><span class="tag">${o.kind}</span></div>
+function renderExp(){$('#expGrid').innerHTML=OFFERS.map(o=>`<article class="pk"><div class="photo" data-scene="${o.scene}" data-seed="${o.seed}"${imgAttr(o)} data-label="${o.title}"><span class="tag">${o.kind}</span></div>
   <div class="pk-body"><div class="pk-top"><h3>${o.title}</h3><span class="dur">${o.meta}</span></div><p>${o.short} ${o.card}</p>
   <ul class="inc" aria-label="${t('pk.inc')}">${o.inc.map(i=>`<li>${ico('i-check')}<span>${i}</span></li>`).join('')}</ul>
   <div class="pk-foot"><div class="price"><small>${o.price.from}</small><b class="mono">${money(o.price.value)}</b> <span>${o.price.unit}</span></div><a class="btn btn-primary" href="#${o.id}" data-offer="${o.id}">${t('exp.view')}${ico('i-arrow')}</a></div></div></article>`).join('')}
 function showOffer(id){
   const o=OFFERS.find(x=>x.id===id);if(!o)return;
   const d=$('#detail');
-  d.innerHTML=`<section class="d-hero"><div class="art" data-scene="${o.scene}" data-seed="${o.seed+5}" data-label="${o.title}"></div><div class="wrap">
+  d.innerHTML=`<section class="d-hero"><div class="art" data-scene="${o.scene}" data-seed="${o.seed+5}"${imgAttr(o)} data-label="${o.title}"></div><div class="wrap">
     <button class="back" type="button" data-back="experiencias">${ico('i-left')}Volver a experiencias</button>
     <div class="eyebrow" style="color:#CFE6D4;margin-top:26px">${o.tag}</div><h1>${o.title}</h1>
     <p style="font-size:clamp(17px,1.8vw,21px);max-width:44ch;margin-top:18px;color:rgba(255,255,255,.92)">${o.short}</p></div></section>
   <div class="wrap"><div class="facts">${o.facts.map(([k,v])=>`<div><small>${k}</small><b>${v}</b></div>`).join('')}</div>
   <div class="d-grid"><div>
     <div class="eyebrow">La experiencia</div><h2 style="margin-top:12px">${o.whatTitle}</h2><div class="d-long">${o.long.map(x=>`<p>${x}</p>`).join('')}</div>
+    ${o.photos?`<div class="blk"><div class="eyebrow">Galería</div><h2 style="margin-top:12px">Fotos de la experiencia</h2><div class="strip">${o.photos.map((src,i)=>`<button type="button" data-strip="${o.id}" data-si="${i}" aria-label="Ampliar foto ${i+1} de ${o.title}"><img src="${src}" alt="${o.title}, foto ${i+1}" loading="lazy"></button>`).join('')}</div></div>`:''}
     <div class="blk"><div class="eyebrow">Ficha</div><h2 style="margin-top:12px">${o.detailsTitle}</h2><dl class="dl">${o.details.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl></div>
     ${o.seasons?`<div class="blk"><div class="eyebrow">Calendario</div><h2 style="margin-top:12px">Temporadas de operación</h2><div class="seasons">${o.seasons.map(([k,v])=>`<div class="season"><small>${k}</small><b>${v}</b></div>`).join('')}</div><p style="color:var(--muted);margin-top:14px;font-size:15px">${o.seasonNote}</p></div>`:''}
     ${o.extras?`<div class="blk"><div class="eyebrow">Opcional</div><h2 style="margin-top:12px">Servicios adicionales</h2>${o.extras.map(([k,v,x])=>`<div class="extra"><div><b>${k}</b><p>${x}</p></div><span class="v mono">+ ${money(v)}</span></div>`).join('')}</div>`:''}
@@ -957,14 +991,16 @@ document.addEventListener('click',e=>{
   const bk=e.target.closest('[data-back]');if(bk){goHome(bk.dataset.back||'paquetes');return}
   const q=e.target.closest('[data-quote]');if(q){const p=PK.find(x=>x.id===q.dataset.quote)||OFFERS.find(x=>x.id===q.dataset.quote);selectPk(p);goHome('contacto');return}
   const lg=e.target.closest('[data-lang]');if(lg){LANG=lg.dataset.lang;applyI18n();return}
-  const gi=e.target.closest('[data-gi]');if(gi){openLb(+gi.dataset.gi);return}
+  const gc=e.target.closest('[data-gcat]');if(gc){GFILTER=+gc.dataset.gcat;renderGal();return}
+  const gi=e.target.closest('[data-gi]');if(gi){LBSET=galItems().map(g=>({src:g.src,cap:GCATS[g.cat]+' · '+g.cap}));openLb(+gi.dataset.gi);return}
+  const st=e.target.closest('[data-strip]');if(st){const o=OFFERS.find(x=>x.id===st.dataset.strip);LBSET=o.photos.map((src,i)=>({src,cap:o.title+' · '+(i+1)}));openLb(+st.dataset.si);return}
   if(e.target.closest('[data-open-chat]')){openChat();return}
 });
 
 
 /* ---------- Galería / lightbox ---------- */
 let LBI=0;
-function openLb(i){LBI=(i+GAL.length)%GAL.length;const g=GAL[LBI];$('#lbFrame').innerHTML=sceneSVG(g[0],g[1],g[2]);$('#lbCap').textContent=g[2];$('#lbIdx').textContent=`${LBI+1} / ${GAL.length}`;$('#lb').hidden=false;$('#lbClose').focus()}
+function openLb(i){const n=LBSET.length;if(!n)return;LBI=(i+n)%n;const g=LBSET[LBI];$('#lbFrame').innerHTML=`<img src="${g.src}" alt="${g.cap.replace(/"/g,'&quot;')}">`;$('#lbCap').textContent=g.cap;$('#lbIdx').textContent=`${LBI+1} / ${n}`;$('#lb').hidden=false;$('#lbClose').focus()}
 $('#lbClose').onclick=()=>$('#lb').hidden=true;
 $('#lbPrev').onclick=()=>openLb(LBI-1);$('#lbNext').onclick=()=>openLb(LBI+1);
 $('#lb').addEventListener('click',e=>{if(e.target.id==='lb')$('#lb').hidden=true});
