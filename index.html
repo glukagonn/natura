@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Natura</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#17321F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: app de chat a pantalla completa — banda de cordillera arriba, conversación al centro, compositor fijo abajo */
+:root{
+  --bg:#F3F1EA; --surface:#FFFFFF; --sand:#E9E2D2; --fg:#1E2621; --muted:#5D6861; --line:#DDDCD2;
+  --forest:#2F5D3A; --forest-ink:#FFFFFF; --pine:#17321F; --fjord:#1C3A5E; --sos:#B3261E; --sos-bg:#FBEDEB;
+  --chip:#FFFFFF; --chip-line:#C9D6CB;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Karla",system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"PingFang SC","Noto Sans SC",monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1512; --surface:#18221C; --sand:#212A23; --fg:#E9EEE8; --muted:#A1ACA4; --line:#2A3830;
+  --forest:#7FB38C; --forest-ink:#0E1511; --pine:#0B140F; --fjord:#9DBBE0; --sos:#FF8A80; --sos-bg:#3A1A18;
+  --chip:#18221C; --chip-line:#34463A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1512; --surface:#18221C; --sand:#212A23; --fg:#E9EEE8; --muted:#A1ACA4; --line:#2A3830;
+  --forest:#7FB38C; --forest-ink:#0E1511; --pine:#0B140F; --fjord:#9DBBE0; --sos:#FF8A80; --sos-bg:#3A1A18;
+  --chip:#18221C; --chip-line:#34463A; color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--fjord);outline-offset:2px;border-radius:6px}
+.app{height:100%;display:grid;grid-template-rows:auto 1fr auto;max-width:760px;margin:0 auto;background:var(--bg);position:relative}
+@media (min-width:780px){.app{border-left:1px solid var(--line);border-right:1px solid var(--line)}}
+
+/* Header */
+.top{position:relative;z-index:5;background:#17321F;color:#fff;padding-top:12px;padding-bottom:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top svg.ridge{position:absolute;left:0;right:0;bottom:0;width:100%;height:46px;opacity:.55;pointer-events:none}
+.top-in{position:relative;display:flex;align-items:center;gap:10px}
+.av{width:44px;height:44px;border-radius:50%;background:#2F5D3A;display:grid;place-items:center;flex:none;box-shadow:0 0 0 2px rgba(255,255,255,.18)}
+.av svg{width:24px;height:24px;stroke:#D5EBD9;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.who{min-width:0;flex:1}
+.who h1{margin:0;font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:.05em;line-height:1;text-transform:uppercase}
+.who p{margin:3px 0 0;font-size:13px;color:#C9D9CD;display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dot{width:8px;height:8px;border-radius:50%;background:#7FD18F;flex:none}
+.tbtn{border:0;background:rgba(255,255,255,.12);color:#fff;border-radius:999px;height:40px;min-width:40px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-weight:700;font-size:13.5px;letter-spacing:.03em;white-space:nowrap}
+.tbtn:hover{background:rgba(255,255,255,.2)}
+.tbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.langwrap{position:relative}
+.langmenu{position:absolute;right:0;top:calc(100% + 8px);background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px -18px rgba(0,0,0,.45);padding:6px;min-width:170px;display:grid;gap:2px;z-index:20}
+.langmenu button{border:0;background:none;text-align:left;padding:10px 12px;border-radius:9px;cursor:pointer;display:flex;justify-content:space-between;gap:12px;font-size:15px}
+.langmenu button:hover{background:var(--sand)}
+.langmenu button[aria-checked="true"]{color:var(--forest);font-weight:700}
+.langmenu small{font-family:var(--mono);color:var(--muted);font-size:12px}
+
+/* Log */
+.log{overflow-y:auto;overscroll-behavior:contain;padding-top:18px;padding-bottom:12px;padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
+.day{align-self:center;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--sand);padding:4px 10px;border-radius:999px}
+.row{display:flex;gap:8px;align-items:flex-end;max-width:100%}
+.row.me{justify-content:flex-end}
+.row .mini{width:28px;height:28px;border-radius:50%;background:var(--forest);display:grid;place-items:center;flex:none}
+.row .mini svg{width:15px;height:15px;stroke:var(--forest-ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.bub{max-width:min(86%,520px);padding:11px 14px;border-radius:18px;font-size:15.5px;line-height:1.55;overflow-wrap:anywhere;min-width:0}
+.bot .bub{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:5px}
+.me .bub{background:var(--forest);color:var(--forest-ink);border-bottom-right-radius:5px}
+.bub strong{font-weight:700}
+.bub .li{display:flex;gap:8px;margin-top:3px}
+.bub .li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--forest);flex:none;margin-top:9px}
+.bub .gap{height:8px}
+.bub .num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.95em}
+.bub.sos{background:var(--sos-bg);border-color:color-mix(in srgb,var(--sos) 35%,transparent)}
+.bub.sos strong{color:var(--sos)}
+.time{font-size:11px;color:var(--muted);margin:0 4px 2px;font-family:var(--mono);white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:7px;padding-left:36px;margin-top:-2px}
+.chip{border:1.5px solid var(--chip-line);background:var(--chip);color:var(--forest);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;cursor:pointer;line-height:1.25;text-align:left}
+.chip:hover{border-color:var(--forest)}
+.chip.sos{color:var(--sos);border-color:color-mix(in srgb,var(--sos) 45%,transparent)}
+.typing{display:flex;gap:5px;padding:14px 16px}
+.typing i{width:8px;height:8px;border-radius:50%;background:var(--muted);opacity:.45}
+@media (prefers-reduced-motion:no-preference){
+  .typing i{animation:bl 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+  .row.new{animation:in .28s cubic-bezier(.2,.8,.2,1)}
+}
+@keyframes bl{50%{opacity:1;transform:translateY(-2px)}}
+@keyframes in{from{transform:translateY(8px);opacity:.3}to{transform:none;opacity:1}}
+
+/* Topic grid (welcome) */
+.topics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:2px 0 4px 36px}
+.topic{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:12px 6px 10px;display:grid;justify-items:center;align-content:start;gap:6px;cursor:pointer;font-size:13px;font-weight:600;text-align:center;line-height:1.2;color:var(--fg);min-width:0}
+.topic:hover{border-color:var(--forest)}
+.topic span.e{font-size:22px;line-height:1}
+.topic.sos{background:var(--sos-bg);border-color:color-mix(in srgb,var(--sos) 30%,transparent);color:var(--sos)}
+@media (max-width:420px){.topics{gap:6px;margin-left:0}.topic{padding:10px 3px 8px;font-size:12px}.chips{padding-left:0}}
+
+/* Composer */
+.composer{background:var(--surface);border-top:1px solid var(--line);padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+.composer form{display:flex;gap:8px;align-items:center}
+.composer input{flex:1;min-width:0;border:1.5px solid var(--line);background:var(--bg);border-radius:999px;padding:12px 16px;font-size:16px;outline:none}
+.composer input:focus{border-color:var(--forest)}
+.send{width:48px;height:48px;border-radius:50%;border:0;background:var(--forest);color:var(--forest-ink);display:grid;place-items:center;cursor:pointer;flex:none;transition:transform .15s}
+.send:active{transform:scale(.94)}
+.send svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.foot{font-size:11px;color:var(--muted);text-align:center;margin-top:7px;font-family:var(--mono);letter-spacing:.02em}
+</style>
+</head>
+<body>
+
+
+<div class="app" id="app">
+  <header class="top">
+    <svg class="ridge" viewBox="0 0 400 46" preserveAspectRatio="none" aria-hidden="true"><path d="M0 46L0 34L40 22L70 30L110 8L130 16L150 4L172 18L200 12L240 30L270 20L300 28L340 10L370 24L400 18L400 46Z" fill="#2F5D3A"/><path d="M0 46L0 40L60 32L120 38L180 30L260 38L330 32L400 36L400 46Z" fill="#244A2E"/></svg>
+    <div class="top-in">
+      <div class="av" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.2-6.1C9.6 14.4 12 13 13 11"/></svg></div>
+      <div class="who"><h1>Natura</h1><p><span class="dot"></span><span id="status">En línea · Nature’s Towers</span></p></div>
+      <div class="langwrap">
+        <button class="tbtn" type="button" id="langBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="langMenu"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span id="langCode">ES</span></button>
+        <div class="langmenu" id="langMenu" role="menu" hidden></div>
+      </div>
+      <button class="tbtn" type="button" id="reset" aria-label="Nuevo chat" title="Nuevo chat"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+    </div>
+  </header>
+
+  <main class="log" id="log" aria-live="polite"></main>
+
+  <footer class="composer">
+    <form id="form" autocomplete="off">
+      <input id="q" name="q" type="text" enterkeyhint="send" placeholder="Escribe tu pregunta…" aria-label="Escribe tu pregunta" maxlength="300">
+      <button class="send" id="sendBtn" type="submit" aria-label="Enviar"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
+    </form>
+    <div class="foot" id="foot">Natura · Nature’s Towers × Dreamers Travel · prototipo académico</div>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const LANGS=['es','en','pt','zh'];
+const P=(l,o)=>o[l]!==undefined?o[l]:o.en;
+
+/* =========================================================
+   DATOS DE NATURE'S TOWERS
+   ========================================================= */
+const D={
+  domo:{price:1670,cap:[2,7],units:10,in:'15:30',out:'10:30',cuotas:3},
+  cab:{adult:145,kid:110,minAge:12,group:[5,7],hours:3,cuotas:2,advance:10,
+    seasons:[['2026-11-01','2027-03-31',{es:'Primavera y verano',en:'Spring & summer',pt:'Primavera e verão',zh:'春夏季'}],
+             ['2027-04-01','2027-04-30',{es:'Otoño',en:'Autumn',pt:'Outono',zh:'秋季'}],
+             ['2027-10-15','2027-10-31',{es:'Primavera',en:'Spring',pt:'Primavera',zh:'春季'}]]},
+  transport:{price:1200,hours:'8–10'}
+};
+const money=n=>'US$'+Math.round(n).toLocaleString('en-US');
+const MN={es:['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'],
+          en:['January','February','March','April','May','June','July','August','September','October','November','December'],
+          pt:['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro']};
+function fmtDate(iso,l){const [y,m,d]=iso.split('-').map(Number);
+  return P(l,{es:`${d} de ${MN.es[m-1]} de ${y}`,en:`${MN.en[m-1]} ${d}, ${y}`,pt:`${d} de ${MN.pt[m-1]} de ${y}`,zh:`${y}年${m}月${d}日`})}
+function monthLabel(m,y,l){return P(l,{es:`en ${MN.es[m-1]} de ${y}`,en:`in ${MN.en[m-1]} ${y}`,pt:`em ${MN.pt[m-1]} de ${y}`,zh:`${y}年${m}月`})}
+function todayISO(){const t=new Date();return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0')}
+
+/* =========================================================
+   NORMALIZACIÓN + ENTIDADES
+   ========================================================= */
+const CJK=/[一-鿿]/;
+const ZHNUM={'一':1,'二':2,'两':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
+function zhNums(s){
+  return s.replace(/([一二两三四五六七八九]?)十([一二三四五六七八九]?)/g,(m,a,b)=>String((a?ZHNUM[a]:1)*10+(b?ZHNUM[b]:0)))
+          .replace(/[一二两三四五六七八九](?=\s*(?:个|位|岁|月|人|大人|成人|孩子|小孩|儿童|号))/g,c=>String(ZHNUM[c]));
+}
+function norm(s){
+  let t=zhNums(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  t=t.replace(/[^a-z0-9:$ 一-鿿]+/g,' ').replace(/([一-鿿])([a-z0-9])/g,'$1 $2').replace(/([a-z0-9])([一-鿿])/g,'$1 $2');
+  return ' '+t.replace(/\s+/g,' ').trim()+' ';
+}
+const NUMW={un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,once:11,doce:12,trece:13,catorce:14,quince:15,
+  one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,couple:2,pareja:2,
+  um:1,duas:2,dois:2,quatro:4,sete:7,oito:8,nove:9,dez:10,onze:11,doze:12,treze:13,quatorze:14,catorze:14,quinze:15};
+function withDigits(n){return n.replace(/ ([a-z]+)(?= )/g,(m,w)=>NUMW[w]?' '+NUMW[w]:m)}
+const MONTHS={enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,setiembre:9,octubre:10,noviembre:11,diciembre:12,
+  january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12,
+  janeiro:1,fevereiro:2,marco:3,maio:5,junho:6,julho:7,setembro:9,outubro:10,novembro:11,dezembro:12};
+function entities(n){
+  const d=withDigits(n), e={};let m;
+  if((m=d.match(/ (\d+) (?:adultos?|grandes|mayores|adults?|grown ?ups?) /))||(m=d.match(/(\d+) ?(?:个|位)?(?:大人|成人|成年人)/)))e.adults=+m[1];
+  if((m=d.match(/ (\d+) (?:ninos?|ninas?|hijos?|hijas?|menores|chicos?|chicas?|kids?|children|childs?|teens?|adolescentes?|criancas?|filhos?|filhas?) /))||(m=d.match(/(\d+) ?(?:个|位)?(?:孩子|小孩|儿童|小朋友)/)))e.kids=+m[1];
+  if((m=d.match(/ (?:somos|seremos|vamos|para|we are|were|we re|for|grupo de|group of) (\d+) /))||(m=d.match(/ (\d+) (?:personas?|pessoas?|pax|people|persons?|viajeros?|viajantes?|huespedes|hospedes|guests?|travelers?|amigos?|friends) /))||(m=d.match(/(?:我们|一共|共)? ?(\d+) ?(?:个|位)?人/)))e.people=+m[1];
+  if((m=d.match(/ (\d+) (?:anos?|years?|yo) /))||(m=d.match(/ (?:tiene|tengo|tem|tenho|edad de|idade de|age|aged|is) (\d+) /))||(m=d.match(/ (?:ninos?|ninas?|hijos?|hijas?|kids?|children|child|son|daughter|criancas?|filhos?|filhas?|menores?) (?:de|of|aged|com) (\d+) /))||(m=d.match(/(\d+) ?岁/)))e.age=+m[1];
+  for(const k in MONTHS){if(n.includes(' '+k+' ')){e.month=MONTHS[k];break}}
+  if(!e.month&&(m=d.match(/(\d{1,2}) ?月/))&&+m[1]>=1&&+m[1]<=12)e.month=+m[1];
+  if(/ (hoy|ahora|esta semana|today|now|this week|tonight|hoje|agora|esta noite) /.test(n)||/今天|现在|今晚|本周/.test(n))e.now=true;
+  return e;
+}
+function detectLang(n,cur){
+  if(CJK.test(n))return 'zh';
+  const W={
+    en:' the is what how much do does can i you where when are there my your have has horse price hello hi thanks thank please which any need bring weather food dome tell me about we our am lost to of and it this with get is i im ',
+    es:' el la cuanto donde cuando hay puedo mi los las es hola gracias tienen se cual necesito llevar cuentame sobre por favor quiero hora cuesta ninos nino caballo cabalgata ',
+    pt:' voce vc nao tem posso qual obrigado obrigada ola oi preco quanto custa cavalgada cavalo meu minha sao tambem ate onde hoje amanha quero criancas crianca levar roupa tchau valeu e um uma da do no na pra pro sobre fala tempo cafe o os as em eu vir fazer trilha inclui horas '
+  };
+  const sets={};for(const k in W)sets[k]=new Set(W[k].trim().split(' '));
+  const sc={en:0,es:0,pt:0};const toks=n.trim().split(' ');
+  toks.forEach(w=>{for(const k in sc)if(sets[k].has(w))sc[k]++});
+  // palabras que solo existen en un idioma pesan más
+  const only={pt:['voce','nao','obrigado','obrigada','oi','preco','custa','cavalgada','cavalo','tambem','hoje','amanha','criancas','crianca','tchau','valeu','pra','meu','minha','sao','tem','posso','quanto','onde','fala','cafe','eu','na','no','do','da','em','um','uma','vir','fazer','trilha','inclui','ola','oi','o','dicas','seguranca','voces','estou','ser','faz','muito','precisa','tenho','pode','vou','gostaria','cavalgar','cavalgadas'],
+              es:['cuanto','cuesta','hola','gracias','hay','puedo','cabalgata','caballo','ninos','nino','donde','cuentame','tienen','necesito'],
+              en:['the','what','how','does','thanks','hello','hi','please','which','bring','weather','horse','price','much','i','am','lost','is','are','my','can','there','you','your']};
+  // 'o' en español es 'u otro'; en portugués es artículo. Le damos peso moderado
+  if(toks.includes('o'))sc.pt-=1;
+  toks.forEach(w=>{for(const k in only)if(only[k].includes(w))sc[k]+=1.5});
+  const best=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+  if(best[0][1]>=1&&best[0][1]>best[1][1])return best[0][0];
+  return cur;
+}
+
+/* =========================================================
+   COINCIDENCIA DIFUSA
+   ========================================================= */
+const STOP=new Set('cuanto cuanta cuantos cuando donde puedo puede tiene tienen hay para como que esta este estan sale salen hace the what when where how much does have can quanto quando onde posso pode tem voce esta sao'.split(' '));
+function stem(w){if(w.length>5&&w.endsWith('es'))return w.slice(0,-2);if(w.length>3&&w.endsWith('s'))return w.slice(0,-1);return w}
+function lev(a,b,max){if(Math.abs(a.length-b.length)>max)return max+1;const v=new Array(b.length+1);for(let j=0;j<=b.length;j++)v[j]=j;
+  for(let i=1;i<=a.length;i++){let prev=v[0];v[0]=i;let rowMin=v[0];for(let j=1;j<=b.length;j++){const tmp=v[j];v[j]=Math.min(v[j]+1,v[j-1]+1,prev+(a[i-1]===b[j-1]?0:1));prev=tmp;if(v[j]<rowMin)rowMin=v[j]}if(rowMin>max)return max+1}return v[b.length]}
+function compile(spec){return spec.split('|').filter(Boolean).map(s=>{const i=s.lastIndexOf(':');const k=i>0&&/^\d+$/.test(s.slice(i+1))?s.slice(0,i):s;const w=k===s?1:+s.slice(i+1);
+  const kw=norm(k).trim();return{kw,w,cjk:CJK.test(kw),multi:kw.includes(' '),st:stem(kw)}})}
+function score(def,n,stems){
+  let total=0;
+  for(const k of def){
+    if(k.cjk){if(n.includes(k.kw))total+=k.w*1.3;continue}
+    if(k.multi&&n.includes(' '+k.kw+' '))total+=k.w*1.3;
+  }
+  for(const t of stems){
+    if(CJK.test(t))continue;
+    let best=0;
+    for(const k of def){
+      if(k.multi||k.cjk)continue;
+      let m=0;
+      if(t===k.st||t===k.kw)m=1;
+      else if(!STOP.has(t)&&k.st.length>=5&&t.length>=4){
+        const max=k.st.length>=8?2:1;
+        if(lev(t,k.st,max)<=max)m=.8;
+        else if(k.st.length>=6&&t.length>=6&&t.slice(0,6)===k.st.slice(0,6))m=.75;
+      }
+      if(m*k.w>best)best=m*k.w;
+    }
+    total+=best;
+  }
+  return total;
+}
+
+/* =========================================================
+   VOCABULARIO (es · en · pt · zh)
+   ========================================================= */
+const TOPICS={
+  cab:compile('cabalgata:3|cabalgatas:3|caballo:3|caballos:3|cabalgar:3|montar:2|equitacion:3|jinete:2|baqueano:3|baqueanos:3|a caballo:3|horse:3|horses:3|horseback:3|riding:3|ride:2|rides:2|cavalgada:3|cavalgadas:3|cavalo:3|cavalos:3|cavalgar:3|passeio a cavalo:3|骑马:3|马:2|骑行:2|马术:3'),
+  domo:compile('domo:3|domos:3|alojamiento:3|alojar:2|glamping:3|habitacion:2|pieza:2|cabana:2|dormir:2|hospedaje:3|quedarme:1|estadia:2|estancia:2|noche:1|noches:1|dome:3|domes:3|room:2|rooms:2|stay:2|lodging:3|accommodation:3|sleep:2|night:1|nights:1|hotel:2|ecocamp:2|camp:1|check in:2|checkin:2|check out:2|checkout:2|hospedagem:3|quarto:2|quartos:2|pousada:2|noite:1|noites:1|圆顶:3|穹顶:3|帐篷:2|住宿:3|房间:2|酒店:2|过夜:2|营地:2|入住:2|退房:2'),
+  trans:compile('transporte:3|traslado:3|traslados:3|transfer:3|transfers:3|transport:3|transportation:3|van:2|vehiculo:2|auto:1|chofer:2|driver:2|shuttle:3|bus:2|car:1|como llego:3|como llegar:3|get there:3|aeropuerto:2|airport:2|motorista:2|carro:1|como chegar:3|aeroporto:2|onibus:2|交通:3|接送:3|包车:3|司机:2|怎么去:3|机场:2|班车:2'),
+  pkgs:compile('paquete:3|paquetes:3|package:3|packages:3|tour:2|tours:2|circuito w:3|circuito o:3|w trek:3|o trek:3|w circuit:3|o circuit:3|la w:2|the w:2|programa:2|programas:2|pacote:3|pacotes:3|roteiro:2|套餐:3|行程:2|w线:3|o线:3'),
+  park:compile('entrada al parque:4|entradas:2|entrada:1|conaf:4|ticket:2|tickets:2|park entrance:4|park fee:4|entrance fee:4|parque:1|guardaparque:2|guardaparques:2|ranger:2|entrada do parque:4|ingresso:3|ingressos:3|门票:4|入园:3|国家公园:2')
+};
+const FACETS={
+  price:compile('precio:3|precios:3|cuesta:3|cuestan:3|cuanto sale:3|cuanto vale:3|cuanto es:2|valor:2|tarifa:3|tarifas:3|costo:3|cobran:2|usd:2|dolares:2|price:3|prices:3|cost:3|costs:3|how much:3|rate:2|rates:2|fee:2|fees:2|total:1|preco:3|precos:3|quanto custa:4|custa:3|custo:3|quanto e:2|dolar:2|多少钱:4|价格:3|价钱:3|费用:3|收费:2|多少:2|美元:2|贵:1'),
+  incl:compile('incluye:3|incluido:3|incluida:3|incluidos:3|incluyen:3|viene con:2|que tiene:2|include:3|includes:3|included:3|including:2|comes with:3|inclui:3|incluso:3|incluida:3|vem com:2|包括:3|包含:3|含:1|有什么:1'),
+  time:compile('horario:3|horarios:3|hora:2|a que hora:3|cuando:1|check in:3|checkin:3|check out:3|checkout:3|salida:2|salen:2|time:2|times:2|schedule:3|what time:3|when:1|departure:2|que horas:3|quando:1|saida:2|几点:3|时间:2|什么时候:2|入住时间:3|退房:3|出发:2'),
+  dur:compile('dura:3|duracion:3|cuanto tiempo:3|cuanto dura:4|how long:3|duration:3|lasts:2|duracao:3|quanto tempo:3|quantas horas:3|多久:3|多长时间:4|几个小时:3|持续:2'),
+  age:compile('edad:3|nino:2|ninos:2|nina:1|hijo:2|hija:2|hijos:2|menor:2|menores:2|bebe:2|kid:2|kids:2|child:2|children:2|age:3|years old:3|year old:3|old enough:3|minimum age:4|edad minima:4|adolescente:2|teen:2|teenager:2|idade:3|crianca:2|criancas:2|filho:2|filha:2|filhos:2|年龄:3|岁:2|孩子:2|儿童:2|小孩:2|未成年:3|儿子:2|女儿:2'),
+  group:compile('grupo:2|cuantas personas:4|capacidad:3|caben:3|cabemos:3|maximo:2|ocupacion:3|personas:1|how many people:4|how many:2|capacity:3|fit:2|group:2|people:1|quantas pessoas:4|capacidade:3|cabem:3|pessoas:1|lotacao:2|几个人:3|多少人:3|容纳:3|最多:2|人数:3'),
+  book:compile('reservar:3|reserva:3|reservas:2|reservo:3|reservacion:3|book:3|booking:3|reserve:3|reservation:3|disponibilidad:3|disponible:2|available:2|availability:3|anticipacion:3|advance:2|cupo:2|cupos:2|disponibilidade:3|disponivel:2|antecedencia:3|agendar:2|预订:3|预约:3|订:2|提前:2'),
+  pay:compile('pago:3|pagos:2|pagar:3|cuotas:4|cuota:4|tarjeta:2|efectivo:2|transferencia:2|payment:3|installments:4|installment:4|card:1|cash:2|pagamento:3|parcelas:4|parcela:4|parcelar:4|cartao:2|dinheiro:2|pix:2|付款:3|支付:3|分期:4|信用卡:2|现金:2'),
+  season:compile('temporada:3|temporadas:3|fechas:2|fecha:1|abierto:2|abierta:2|opera:2|funciona:1|meses:2|season:3|seasons:3|open:2|operate:2|operating:2|months:2|dates:2|run:1|runs:1|invierno:2|winter:2|datas:2|aberto:2|aberta:2|inverno:2|季节:3|开放:2|月份:2|日期:2|营业:2'),
+  change:compile('cambiar fecha:4|cambio de fecha:4|cambiar la fecha:4|cancelar:3|cancelacion:3|reprogramar:4|reprogramacion:4|postergar:3|cancel:3|cancellation:3|reschedule:4|change the date:4|change date:4|refund:3|reembolso:3|suspende:2|mudar a data:4|remarcar:4|cancelamento:3|改期:4|取消:3|退款:3|更改日期:4'),
+  rules:compile('reglas:3|normas:3|prohibido:3|permitido:2|rules:3|allowed:2|forbidden:3|policy:2|regras:3|proibido:3|规定:3|禁止:3|允许:2|规则:3')
+};
+const INTENTS={
+  hello:compile('hola:3|buenas:2|buenos dias:3|buenas tardes:3|buenas noches:3|hello:3|hi:3|hey:3|good morning:3|good afternoon:3|good evening:3|ola:3|oi:3|bom dia:3|boa tarde:3|boa noite:3|你好:3|您好:3|嗨:3|早上好:3|晚上好:3'),
+  thanks:compile('gracias:3|muchas gracias:3|genial:1|perfecto:1|thanks:3|thank you:3|thx:3|great:1|obrigado:3|obrigada:3|valeu:3|谢谢:3|感谢:3|多谢:3'),
+  bye:compile('chao:3|adios:3|hasta luego:3|nos vemos:3|bye:3|goodbye:3|see you:3|tchau:3|ate logo:3|ate mais:3|再见:3|拜拜:3'),
+  who:compile('quien eres:4|que eres:4|eres un bot:4|como te llamas:4|tu nombre:3|who are you:4|what are you:4|are you a bot:4|your name:3|que puedes hacer:4|what can you do:4|quem e voce:4|o que voce e:4|qual seu nome:4|o que voce pode fazer:4|robo:2|你是谁:4|你是什么:4|机器人:3|你能做什么:4|你叫什么:4'),
+  help:compile('ayuda:3|menu:3|opciones:3|temas:3|help:3|options:3|topics:3|ajuda:3|opcoes:3|帮助:3|菜单:3|选项:2'),
+  food:compile('comida:3|comidas:3|comer:3|desayuno:3|cena:3|almuerzo:3|cenar:2|alimentacion:3|vegano:3|vegetariano:3|celiaco:3|dieta:3|alergia:3|food:3|meal:3|meals:3|breakfast:3|dinner:3|lunch:3|eat:3|vegan:3|vegetarian:3|gluten:3|diet:3|allergy:3|snack:2|snacks:2|cafe da manha:4|jantar:3|almoco:3|refeicao:3|refeicoes:3|sem gluten:3|吃:2|吃饭:3|早餐:3|晚餐:3|午餐:3|素食:3|饮食:3|过敏:3|食物:3|餐:2'),
+  wifi:compile('wifi:4|wi fi:4|internet:3|clave:2|contrasena:2|password:2|senha:2|无线网:4|网络:3|上网:3|密码:2'),
+  signal:compile('senal:3|cobertura:3|celular:2|signal:3|coverage:3|cell:2|datos moviles:3|mobile data:3|4g:2|5g:2|sinal:3|信号:3|流量:2'),
+  parking:compile('dejar el auto:5|dejar el carro:5|dejar el coche:5|deixar o carro:5|leave my car:5|leave the car:5|estacionamiento:4|estacionar:4|parking:4|park my car:4|estaciono:4|estacionar o carro:4|停车:4|停车场:4'),
+  pets:compile('mascota:4|mascotas:4|perro:4|gato:4|pet:4|pets:4|dog:4|dogs:4|cat:4|cachorro:4|animal de estimacao:4|宠物:4|狗:4|猫:4'),
+  smoke:compile('fumar:4|fumo:4|cigarro:4|cigarrillo:4|vapear:4|smoke:4|smoking:4|cigarette:4|vape:4|吸烟:4|抽烟:4|香烟:4'),
+  weather:compile('clima:3|que tiempo:3|temperatura:3|frio:2|calor:2|viento:3|lluvia:3|llueve:3|nieve:2|pronostico:3|weather:3|temperature:3|cold:2|wind:3|windy:3|rain:3|snow:2|forecast:3|vento:3|chuva:3|neve:2|previsao:3|天气:3|温度:3|冷:2|风:2|下雨:3|雨:2|雪:2|预报:3'),
+  pack:compile('que llevar:4|que debo llevar:4|llevar:2|ropa:3|vestir:2|equipaje:2|mochila:2|zapatos:2|botas:2|what to bring:4|bring:2|pack:2|packing:3|clothes:3|wear:3|boots:2|shoes:2|o que levar:4|levar:2|roupa:3|roupas:3|mala:2|带什么:4|穿什么:4|衣服:3|装备:2|鞋:2'),
+  sos:compile('emergencia:4|emergencias:4|urgencia:4|accidente:4|herido:4|perdido:3|perdida:3|me perdi:4|ambulancia:4|bomberos:4|carabineros:4|policia:3|incendio:4|medico:3|hospital:3|emergency:4|urgent:3|accident:4|injured:4|hurt:3|lost:3|ambulance:4|police:3|sos:4|help me:4|socorro:4|acidente:4|ferido:4|machucado:4|bombeiros:4|紧急:4|急救:4|救命:4|受伤:4|迷路:4|救护车:4|警察:3|火灾:4|医生:3|医院:3|事故:4'),
+  wildlife:compile('fauna:3|animales:3|puma:6|pumas:6|guanaco:3|guanacos:3|condor:3|nandu:3|zorro:3|wildlife:3|animals:3|cougar:6|mountain lion:6|fox:3|animais:3|raposa:3|动物:3|美洲狮:6|原驼:3|秃鹰:3|狐狸:3|野生动物:3'),
+  green:compile('sostenibilidad:3|ecologico:3|medio ambiente:3|basura:3|residuos:3|reciclar:3|no deje rastro:4|leave no trace:4|sustainability:3|trash:3|garbage:3|waste:3|recycle:3|hacer fuego:4|fogata:4|campfire:4|make a fire:4|lixo:3|sustentabilidade:3|fogueira:4|fazer fogo:4|环保:3|垃圾:3|生火:4|篝火:4|可持续:3'),
+  safety:compile('seguridad:2|peligroso:3|peligro:3|safe:2|safety:3|dangerous:3|danger:3|seguranca:3|perigoso:3|perigo:3|安全:3|危险:3'),
+  experience:compile('experiencia:3|experience:3|experiencia previa:4|nunca he montado:4|no se montar:4|primera vez:3|principiante:3|never ridden:4|first time:3|beginner:3|no experience:4|need experience:4|sin experiencia:4|nunca montei:4|primeira vez:3|iniciante:3|sem experiencia:4|没骑过:4|没有经验:4|第一次:3|初学者:3|难吗:3|难度:3'),
+  base:compile('base torres:4|mirador base torres:4|las torres:3|towers base:4|base of the towers:4|百内塔:4|三塔:4|塔底:4'),
+  grey:compile('glaciar grey:4|grey:3|glaciar:2|glacier:3|lago grey:4|grey glacier:4|geleira:3|格雷冰川:4|冰川:3|格雷:3'),
+  frances:compile('valle del frances:4|valle frances:4|frances:3|french valley:4|cuernos:3|vale do frances:4|法国谷:4|法兰西谷:4'),
+  todo:compile('que hacer:4|what can i do:4|can i do:3|o que posso fazer:4|posso fazer:3|可以做什么:4|para hacer:4|hacer:2|que puedo hacer:4|actividades:3|actividad:3|excursion:3|excursiones:3|trekking:3|hike:3|hikes:3|hiking:3|things to do:4|what to do:4|activities:3|activity:3|recommend:2|o que fazer:4|atividades:3|passeios:3|trilha:3|trilhas:3|caminhada:3|做什么:4|玩什么:4|活动:3|徒步:3|景点:3|推荐:2'),
+  reception:compile('recepcion:3|asistencia turistica:4|front desk:4|reception:3|contacto:2|contact:2|hablar con alguien:4|talk to someone:4|recepcao:3|contato:2|前台:4|接待:3|联系:2|人工:3'),
+  dreamers:compile('dreamers travel:4|dreamers:3|agencia:3|agency:3|travel agency:4|旅行社:3')
+};
+
+/* =========================================================
+   RESPUESTAS (4 idiomas)
+   ========================================================= */
+const SN=(s,l)=>s[2][l]||s[2].en;
+function seasonStatus(l,e){
+  const S=D.cab.seasons, t=todayISO();
+  if(e&&e.month){
+    const now=new Date();let y=now.getFullYear();if(e.month<now.getMonth()+1)y++;
+    const tm=y+'-'+String(e.month).padStart(2,'0'), lab=monthLabel(e.month,y,l);
+    const inS=S.find(s=>tm>=s[0].slice(0,7)&&tm<=s[1].slice(0,7));
+    if(inS){const partial=inS[0].slice(0,7)===tm&&inS[0].slice(8)!=='01';const f=fmtDate(inS[0],l);const n=SN(inS,l);
+      return P(l,{es:`✅ **Sí opera ${lab}**${partial?` (desde el ${f})`:''}: temporada de ${n.toLowerCase()}.`,
+                  en:`✅ **It runs ${lab}**${partial?` (from ${f})`:''}: ${n.toLowerCase()} season.`,
+                  pt:`✅ **Funciona ${lab}**${partial?` (a partir de ${f})`:''}: temporada de ${n.toLowerCase()}.`,
+                  zh:`✅ **${lab}有开放**${partial?`（${f}起）`:''}：${n}。`})}
+    const nx=S.find(s=>s[0]>tm+'-31');const f=nx?fmtDate(nx[0],l):'';
+    return P(l,{es:`❌ **No opera ${lab}.**${nx?` La siguiente temporada comienza el ${f}.`:''}`,en:`❌ **It doesn’t run ${lab}.**${nx?` The next season starts on ${f}.`:''}`,
+                pt:`❌ **Não funciona ${lab}.**${nx?` A próxima temporada começa em ${f}.`:''}`,zh:`❌ **${lab}不开放。**${nx?`下一季从${f}开始。`:''}`});
+  }
+  const cur=S.find(s=>t>=s[0]&&t<=s[1]);
+  if(cur){const f=fmtDate(cur[1],l),n=SN(cur,l);return P(l,{es:`✅ **Hoy está en temporada** (${n.toLowerCase()}, hasta el ${f}).`,en:`✅ **It’s in season today** (${n.toLowerCase()}, until ${f}).`,pt:`✅ **Hoje está em temporada** (${n.toLowerCase()}, até ${f}).`,zh:`✅ **今天在营业季内**（${n}，至${f}）。`})}
+  const nx=S.find(s=>s[0]>t);if(!nx)return P(l,{es:'Consulta en recepción las próximas fechas.',en:'Ask at reception about upcoming dates.',pt:'Consulte a recepção sobre as próximas datas.',zh:'请向前台咨询之后的日期。'});
+  const f=fmtDate(nx[0],l);
+  return P(l,{es:`⏳ **Hoy no hay salidas.** La próxima temporada comienza el ${f}.`,en:`⏳ **No rides today.** The next season starts on ${f}.`,pt:`⏳ **Hoje não há saídas.** A próxima temporada começa em ${f}.`,zh:`⏳ **今天没有出发班次。** 下一季从${f}开始。`});
+}
+function seasonsList(l){return D.cab.seasons.map(s=>`• **${SN(s,l)}:** ${fmtDate(s[0],l)} – ${fmtDate(s[1],l)}`).join('\n')}
+
+function cabCalc(l,e){
+  let a=e.adults||0,k=e.kids||0;const assumed=!a&&!k&&!!e.people;if(assumed)a=e.people;if(!a&&!k)return '';
+  const tot=a*D.cab.adult+k*D.cab.kid,n=a+k;
+  const L=P(l,{es:['Para tu grupo','Adultos','Niños','Total',`o 2 cuotas de ${money(tot/2)}`,`(Calculado como adultos. Los niños pagan ${money(D.cab.kid)}.)`],
+               en:['For your group','Adults','Children','Total',`or 2 installments of ${money(tot/2)}`,`(Calculated as adults. Children pay ${money(D.cab.kid)}.)`],
+               pt:['Para o seu grupo','Adultos','Crianças','Total',`ou 2 parcelas de ${money(tot/2)}`,`(Calculado como adultos. Crianças pagam ${money(D.cab.kid)}.)`],
+               zh:['您的团体费用','成人','儿童','合计',`或分2期，每期${money(tot/2)}`,`（按成人计算。儿童价格为${money(D.cab.kid)}。）`]});
+  let s=`\n\n🧮 **${L[0]}:**`;
+  if(a)s+=`\n• ${L[1]}: ${a} × ${money(D.cab.adult)} = ${money(a*D.cab.adult)}`;
+  if(k)s+=`\n• ${L[2]}: ${k} × ${money(D.cab.kid)} = ${money(k*D.cab.kid)}`;
+  s+=`\n**${L[3]}: ${money(tot)}**${l==='zh'?'，':', '}${L[4]}${l==='zh'?'。':'.'}`;
+  if(assumed)s+='\n'+L[5];
+  const [mn,mx]=D.cab.group;
+  if(n>mx)s+='\n\n'+P(l,{es:`ℹ️ Cada salida es para máximo ${mx} personas, así que tu grupo iría en más de una salida. Coordínalo en recepción.`,en:`ℹ️ Each ride takes up to ${mx} people, so your group would go in more than one ride. Arrange it at reception.`,pt:`ℹ️ Cada saída leva no máximo ${mx} pessoas, então seu grupo iria em mais de uma saída. Combine na recepção.`,zh:`ℹ️ 每个班次最多${mx}人，您的团体需要分成多个班次。请在前台安排。`});
+  else if(n<mn)s+='\n\n'+P(l,{es:`ℹ️ Las salidas se realizan con grupos de ${mn} a ${mx} personas. Consulta en recepción cómo se completa tu grupo.`,en:`ℹ️ Rides run with groups of ${mn} to ${mx} people. Ask at reception how your group is completed.`,pt:`ℹ️ As saídas são feitas com grupos de ${mn} a ${mx} pessoas. Pergunte na recepção como seu grupo é completado.`,zh:`ℹ️ 每个班次需${mn}至${mx}人成团。请向前台咨询如何拼团。`});
+  return s;
+}
+function domoCalc(l,e){
+  const n=e.people||((e.adults||0)+(e.kids||0));if(!n)return '';const [mn,mx]=D.domo.cap;
+  if(n<mn)return '\n\n'+P(l,{es:`🧮 El domo es para ${mn} a ${mx} personas y se reserva completo: ${money(D.domo.price)}.`,en:`🧮 Domes host ${mn} to ${mx} people and are booked whole: ${money(D.domo.price)}.`,pt:`🧮 O domo é para ${mn} a ${mx} pessoas e é reservado inteiro: ${money(D.domo.price)}.`,zh:`🧮 每个圆顶可住${mn}至${mx}人，整顶预订：${money(D.domo.price)}。`});
+  const u=Math.ceil(n/mx),tot=u*D.domo.price;
+  if(u>D.domo.units)return '\n\n'+P(l,{es:`🧮 Para ${n} personas se necesitarían más de ${D.domo.units} domos. Consulta en recepción para grupos grandes.`,en:`🧮 ${n} people would need more than ${D.domo.units} domes. Please ask reception about large groups.`,pt:`🧮 Para ${n} pessoas seriam necessários mais de ${D.domo.units} domos. Consulte a recepção para grupos grandes.`,zh:`🧮 ${n}人需要超过${D.domo.units}个圆顶，大团体请咨询前台。`});
+  return '\n\n'+P(l,{es:`🧮 **Para ${n} personas:** ${u} domo${u>1?'s':''} → **${money(tot)}** (≈ ${money(tot/n)} por persona), o 3 cuotas de ${money(tot/3)}.`,
+    en:`🧮 **For ${n} people:** ${u} dome${u>1?'s':''} → **${money(tot)}** (≈ ${money(tot/n)} per person), or 3 installments of ${money(tot/3)}.`,
+    pt:`🧮 **Para ${n} pessoas:** ${u} domo${u>1?'s':''} → **${money(tot)}** (≈ ${money(tot/n)} por pessoa), ou 3 parcelas de ${money(tot/3)}.`,
+    zh:`🧮 **${n}人：** 需要${u}个圆顶 → **${money(tot)}**（每人约${money(tot/n)}），或分3期，每期${money(tot/3)}。`});
+}
+function ageCheck(l,e){
+  if(e.age==null)return '';const a=e.age,m=D.cab.minAge;
+  if(a<m)return '\n\n'+P(l,{es:`❌ Con **${a} años** todavía no puede participar: la edad mínima es ${m} años.`,en:`❌ At **${a} years old** they can’t join yet: the minimum age is ${m}.`,pt:`❌ Com **${a} anos** ainda não pode participar: a idade mínima é ${m} anos.`,zh:`❌ **${a}岁**暂时不能参加：最低年龄为${m}岁。`});
+  if(a<18)return '\n\n'+P(l,{es:`✅ Con **${a} años** sí puede ir, presentando la autorización correspondiente por ser menor de edad. Tarifa niño: ${money(D.cab.kid)}.`,en:`✅ At **${a}** they can join, with the required authorization for minors. Child rate: ${money(D.cab.kid)}.`,pt:`✅ Com **${a} anos** pode participar, apresentando a autorização exigida para menores. Tarifa criança: ${money(D.cab.kid)}.`,zh:`✅ **${a}岁**可以参加，未成年人需出示相应的授权书。儿童价格：${money(D.cab.kid)}。`});
+  return '\n\n'+P(l,{es:`✅ Con ${a} años sí puede participar (tarifa adulto ${money(D.cab.adult)}).`,en:`✅ At ${a} they can join (adult rate ${money(D.cab.adult)}).`,pt:`✅ Com ${a} anos pode participar (tarifa adulto ${money(D.cab.adult)}).`,zh:`✅ ${a}岁可以参加（成人价格${money(D.cab.adult)}）。`});
+}
+
+const T={
+  cab:{
+    over:(l,e)=>P(l,{
+      es:`🐎 **Descubriendo la Patagonia a caballo**\nCabalgata guiada por la estepa, con vista a montañas y lagunas cercanas a Torres del Paine.\n• Duración: ≈ ${D.cab.hours} horas\n• Grupos de ${D.cab.group[0]} a ${D.cab.group[1]} personas\n• Edad mínima: ${D.cab.minAge} años\n• Sale desde Nature’s Towers, con traslado incluido\n• Adultos ${money(D.cab.adult)} · Niños ${money(D.cab.kid)}\n\nNo necesitas experiencia previa.`,
+      en:`🐎 **Discovering Patagonia on horseback**\nA guided ride across the steppe, with views of mountains and lagoons near Torres del Paine.\n• Duration: ≈ ${D.cab.hours} hours\n• Groups of ${D.cab.group[0]} to ${D.cab.group[1]} people\n• Minimum age: ${D.cab.minAge}\n• Leaves from Nature’s Towers, transfer included\n• Adults ${money(D.cab.adult)} · Children ${money(D.cab.kid)}\n\nNo riding experience needed.`,
+      pt:`🐎 **Descobrindo a Patagônia a cavalo**\nCavalgada guiada pela estepe, com vista para montanhas e lagoas perto de Torres del Paine.\n• Duração: ≈ ${D.cab.hours} horas\n• Grupos de ${D.cab.group[0]} a ${D.cab.group[1]} pessoas\n• Idade mínima: ${D.cab.minAge} anos\n• Sai da Nature’s Towers, com traslado incluído\n• Adultos ${money(D.cab.adult)} · Crianças ${money(D.cab.kid)}\n\nNão precisa de experiência.`,
+      zh:`🐎 **骑马探索巴塔哥尼亚**\n由向导带领穿越草原，欣赏百内国家公园附近的山峰与湖泊。\n• 时长：约${D.cab.hours}小时\n• 每团${D.cab.group[0]}至${D.cab.group[1]}人\n• 最低年龄：${D.cab.minAge}岁\n• 从Nature’s Towers出发，含往返接送\n• 成人${money(D.cab.adult)} · 儿童${money(D.cab.kid)}\n\n无需骑马经验。`})+'\n'+seasonStatus(l,e),
+    price:(l,e)=>P(l,{
+      es:`💵 **Tarifas de la cabalgata (por persona)**\n• Adultos: **${money(D.cab.adult)}**\n• Niños (desde ${D.cab.minAge} años): **${money(D.cab.kid)}**\n\nPuedes pagar en hasta ${D.cab.cuotas} cuotas.`,
+      en:`💵 **Horseback ride rates (per person)**\n• Adults: **${money(D.cab.adult)}**\n• Children (from age ${D.cab.minAge}): **${money(D.cab.kid)}**\n\nYou can pay in up to ${D.cab.cuotas} installments.`,
+      pt:`💵 **Tarifas da cavalgada (por pessoa)**\n• Adultos: **${money(D.cab.adult)}**\n• Crianças (a partir de ${D.cab.minAge} anos): **${money(D.cab.kid)}**\n\nVocê pode pagar em até ${D.cab.cuotas} parcelas.`,
+      zh:`💵 **骑马价格（每人）**\n• 成人：**${money(D.cab.adult)}**\n• 儿童（${D.cab.minAge}岁起）：**${money(D.cab.kid)}**\n\n可分最多${D.cab.cuotas}期付款。`})+cabCalc(l,e)+ageCheck(l,e),
+    incl:l=>P(l,{
+      es:`✅ **La cabalgata incluye:**\n• Caballo asignado para cada participante\n• Guía especializado y apoyo de baqueanos\n• Casco y equipamiento básico de seguridad\n• Traslado ida y vuelta desde Nature’s Towers\n• Agua durante la actividad\n• Parada panorámica para descansar y tomar fotos`,
+      en:`✅ **The ride includes:**\n• An assigned horse for each rider\n• Specialist guide and baqueano (local horsemen) support\n• Helmet and basic safety gear\n• Round-trip transfer from Nature’s Towers\n• Water during the activity\n• A panoramic stop to rest and take photos`,
+      pt:`✅ **A cavalgada inclui:**\n• Cavalo para cada participante\n• Guia especializado e apoio de baqueanos (peões locais)\n• Capacete e equipamento básico de segurança\n• Traslado de ida e volta da Nature’s Towers\n• Água durante a atividade\n• Parada panorâmica para descansar e tirar fotos`,
+      zh:`✅ **骑马活动包括：**\n• 每位参加者配一匹马\n• 专业向导及当地牧马人协助\n• 头盔及基本安全装备\n• Nature’s Towers往返接送\n• 活动期间提供饮用水\n• 观景点休息拍照`}),
+    time:(l,e)=>P(l,{
+      es:`🕒 Los días y horarios de salida **varían según la temporada** y la salida reservada. Consulta en recepción las salidas de esta semana.\n\nLa actividad dura ≈ ${D.cab.hours} horas.`,
+      en:`🕒 Departure days and times **vary by season** and by the ride you book. Ask at reception for this week’s departures.\n\nThe activity lasts ≈ ${D.cab.hours} hours.`,
+      pt:`🕒 Os dias e horários de saída **variam conforme a temporada** e a saída reservada. Consulte na recepção as saídas desta semana.\n\nA atividade dura ≈ ${D.cab.hours} horas.`,
+      zh:`🕒 出发日期和时间**随季节及所订班次而定**。请向前台查询本周的班次。\n\n活动时长约${D.cab.hours}小时。`})+'\n'+seasonStatus(l,e),
+    dur:l=>P(l,{es:`⏱️ La cabalgata dura **aproximadamente ${D.cab.hours} horas**, incluida una parada panorámica para descansar y tomar fotos. El traslado desde Nature’s Towers está incluido.`,
+      en:`⏱️ The ride takes **about ${D.cab.hours} hours**, including a panoramic stop to rest and take photos. Transfer from Nature’s Towers is included.`,
+      pt:`⏱️ A cavalgada dura **cerca de ${D.cab.hours} horas**, incluindo uma parada panorâmica para descansar e tirar fotos. O traslado da Nature’s Towers está incluído.`,
+      zh:`⏱️ 骑马活动**约${D.cab.hours}小时**，包括在观景点休息拍照。含Nature’s Towers往返接送。`}),
+    age:(l,e)=>P(l,{es:`👧 **Edad mínima: ${D.cab.minAge} años.**\nLos menores de edad deben presentar la autorización correspondiente. Tarifa niños: ${money(D.cab.kid)}.`,
+      en:`👧 **Minimum age: ${D.cab.minAge}.**\nMinors must bring the required authorization. Child rate: ${money(D.cab.kid)}.`,
+      pt:`👧 **Idade mínima: ${D.cab.minAge} anos.**\nMenores de idade devem apresentar a autorização correspondente. Tarifa criança: ${money(D.cab.kid)}.`,
+      zh:`👧 **最低年龄：${D.cab.minAge}岁。**\n未成年人须出示相应的授权书。儿童价格：${money(D.cab.kid)}。`})+ageCheck(l,e),
+    group:(l,e)=>P(l,{es:`👥 Las salidas son para grupos de **${D.cab.group[0]} a ${D.cab.group[1]} personas**.`,en:`👥 Rides are for groups of **${D.cab.group[0]} to ${D.cab.group[1]} people**.`,pt:`👥 As saídas são para grupos de **${D.cab.group[0]} a ${D.cab.group[1]} pessoas**.`,zh:`👥 每团**${D.cab.group[0]}至${D.cab.group[1]}人**。`})+cabCalc(l,e),
+    book:l=>P(l,{es:`📅 **Reserva con al menos ${D.cab.advance} días de anticipación.**\nPuedes pagar en hasta ${D.cab.cuotas} cuotas, según las condiciones de contratación. Haz tu reserva en recepción.`,
+      en:`📅 **Book at least ${D.cab.advance} days in advance.**\nYou can pay in up to ${D.cab.cuotas} installments, under the booking conditions. Book at reception.`,
+      pt:`📅 **Reserve com pelo menos ${D.cab.advance} dias de antecedência.**\nVocê pode pagar em até ${D.cab.cuotas} parcelas, conforme as condições de contratação. Faça sua reserva na recepção.`,
+      zh:`📅 **请至少提前${D.cab.advance}天预订。**\n可按合同条件分最多${D.cab.cuotas}期付款。请在前台预订。`}),
+    pay:(l,e)=>P(l,{es:`💳 La cabalgata se puede pagar en **hasta ${D.cab.cuotas} cuotas**, según las condiciones de contratación.`,en:`💳 The ride can be paid in **up to ${D.cab.cuotas} installments**, under the booking conditions.`,pt:`💳 A cavalgada pode ser paga em **até ${D.cab.cuotas} parcelas**, conforme as condições de contratação.`,zh:`💳 骑马活动可按合同条件**分最多${D.cab.cuotas}期**付款。`})+cabCalc(l,e),
+    season:(l,e)=>P(l,{es:`📆 **Temporadas de operación**\n${seasonsList(l)}\n\nLos días y horarios varían según la temporada.`,en:`📆 **Operating seasons**\n${seasonsList(l)}\n\nDays and times vary by season.`,pt:`📆 **Temporadas de funcionamento**\n${seasonsList(l)}\n\nOs dias e horários variam conforme a temporada.`,zh:`📆 **营业季节**\n${seasonsList(l)}\n\n具体日期和时间随季节而定。`})+'\n'+seasonStatus(l,e),
+    change:l=>P(l,{es:`🌬️ La actividad **puede modificarse o suspenderse** por condiciones meteorológicas adversas o por seguridad. Si necesitas cambiar tu salida, consulta en recepción.`,en:`🌬️ The activity **may be changed or suspended** due to bad weather or for safety. If you need to change your ride, ask at reception.`,pt:`🌬️ A atividade **pode ser alterada ou suspensa** por mau tempo ou por segurança. Se precisar mudar sua saída, consulte a recepção.`,zh:`🌬️ 遇恶劣天气或出于安全原因，活动**可能调整或取消**。如需更改班次，请咨询前台。`}),
+    rules:l=>P(l,{es:`⚠️ **Reglas de la cabalgata**\n• Uso obligatorio del casco\n• Seguir siempre las instrucciones del guía\n• Menores de edad: con autorización\n• Edad mínima: ${D.cab.minAge} años`,en:`⚠️ **Ride rules**\n• Helmet is mandatory\n• Always follow the guide’s instructions\n• Minors need an authorization\n• Minimum age: ${D.cab.minAge}`,pt:`⚠️ **Regras da cavalgada**\n• Uso obrigatório do capacete\n• Seguir sempre as instruções do guia\n• Menores de idade: com autorização\n• Idade mínima: ${D.cab.minAge} anos`,zh:`⚠️ **骑马规定**\n• 必须佩戴头盔\n• 始终听从向导指示\n• 未成年人须有授权书\n• 最低年龄：${D.cab.minAge}岁`})
+  },
+  domo:{
+    over:(l,e)=>P(l,{
+      es:`🏕️ **Domos privados de Nature’s Towers**\nTenemos ${D.domo.units} domos independientes para ${D.domo.cap[0]} a ${D.domo.cap[1]} personas. Cada domo se reserva completo, sin compartirlo con otros viajeros.\n• Check-in: desde las **${D.domo.in}**\n• Check-out: hasta las **${D.domo.out}**\n• Incluye desayuno continental, cena servida en el domo, Wi-Fi y estacionamiento\n• Tarifa: **${money(D.domo.price)} por domo**`,
+      en:`🏕️ **Nature’s Towers private domes**\nWe have ${D.domo.units} separate domes for ${D.domo.cap[0]} to ${D.domo.cap[1]} people. Each dome is booked whole, never shared with other travelers.\n• Check-in: from **${D.domo.in}**\n• Check-out: until **${D.domo.out}**\n• Includes continental breakfast, dinner served in your dome, Wi-Fi and parking\n• Rate: **${money(D.domo.price)} per dome**`,
+      pt:`🏕️ **Domos privados da Nature’s Towers**\nTemos ${D.domo.units} domos independentes para ${D.domo.cap[0]} a ${D.domo.cap[1]} pessoas. Cada domo é reservado inteiro, sem dividir com outros viajantes.\n• Check-in: a partir das **${D.domo.in}**\n• Check-out: até as **${D.domo.out}**\n• Inclui café da manhã continental, jantar servido no domo, Wi-Fi e estacionamento\n• Tarifa: **${money(D.domo.price)} por domo**`,
+      zh:`🏕️ **Nature’s Towers 私人圆顶屋**\n共有${D.domo.units}个独立圆顶，每个可住${D.domo.cap[0]}至${D.domo.cap[1]}人。整顶预订，不与其他游客合住。\n• 入住：**${D.domo.in}**起\n• 退房：**${D.domo.out}**前\n• 含欧陆式早餐、送到圆顶的晚餐、Wi-Fi和停车位\n• 价格：**每个圆顶${money(D.domo.price)}**`})+domoCalc(l,e),
+    price:(l,e)=>P(l,{
+      es:`💵 **Tarifa del domo: ${money(D.domo.price)}** por la reserva completa del domo (${D.domo.cap[0]} a ${D.domo.cap[1]} pasajeros). No es un precio por persona.\n• Pago en hasta ${D.domo.cuotas} cuotas\n• Transporte privado opcional: +${money(D.transport.price)}\n• No incluye entradas al parque ni excursiones guiadas`,
+      en:`💵 **Dome rate: ${money(D.domo.price)}** for the whole dome (${D.domo.cap[0]} to ${D.domo.cap[1]} guests). It is not a per-person price.\n• Pay in up to ${D.domo.cuotas} installments\n• Optional private transport: +${money(D.transport.price)}\n• Park entrance and guided tours not included`,
+      pt:`💵 **Tarifa do domo: ${money(D.domo.price)}** pela reserva do domo inteiro (${D.domo.cap[0]} a ${D.domo.cap[1]} hóspedes). Não é preço por pessoa.\n• Pagamento em até ${D.domo.cuotas} parcelas\n• Transporte privado opcional: +${money(D.transport.price)}\n• Não inclui entrada do parque nem passeios guiados`,
+      zh:`💵 **圆顶价格：${money(D.domo.price)}**，为整个圆顶的价格（${D.domo.cap[0]}至${D.domo.cap[1]}位客人），并非每人价格。\n• 可分最多${D.domo.cuotas}期付款\n• 可选私人交通：+${money(D.transport.price)}\n• 不含公园门票和导览游`})+domoCalc(l,e),
+    incl:l=>P(l,{
+      es:`✅ **Tu estadía incluye:**\n• Domo privado\n• Desayuno continental diario\n• Cena servida en el domo\n• Wi-Fi en las instalaciones\n• Estacionamiento privado\n• Recepción y asistencia turística\n\n❌ **No incluye:** entradas al Parque Nacional Torres del Paine, excursiones guiadas ni transporte privado (se contrata aparte).`,
+      en:`✅ **Your stay includes:**\n• Private dome\n• Daily continental breakfast\n• Dinner served in your dome\n• Wi-Fi on the premises\n• Private parking\n• Reception and tourist assistance\n\n❌ **Not included:** Torres del Paine National Park entrance, guided tours or private transport (booked separately).`,
+      pt:`✅ **Sua estadia inclui:**\n• Domo privado\n• Café da manhã continental diário\n• Jantar servido no domo\n• Wi-Fi nas instalações\n• Estacionamento privado\n• Recepção e assistência turística\n\n❌ **Não inclui:** entrada do Parque Nacional Torres del Paine, passeios guiados nem transporte privado (contratado à parte).`,
+      zh:`✅ **住宿包括：**\n• 私人圆顶\n• 每日欧陆式早餐\n• 送到圆顶的晚餐\n• 营地内Wi-Fi\n• 私人停车位\n• 前台及旅游协助\n\n❌ **不包括：** 百内国家公园门票、导览游以及私人交通（需另订）。`}),
+    time:l=>P(l,{es:`🕒 **Check-in:** desde las ${D.domo.in}\n🕒 **Check-out:** hasta las ${D.domo.out}\n\nTe pedimos respetar estos horarios de entrada y salida.`,en:`🕒 **Check-in:** from ${D.domo.in}\n🕒 **Check-out:** until ${D.domo.out}\n\nPlease respect these arrival and departure times.`,pt:`🕒 **Check-in:** a partir das ${D.domo.in}\n🕒 **Check-out:** até as ${D.domo.out}\n\nPedimos que respeite esses horários de entrada e saída.`,zh:`🕒 **入住：** ${D.domo.in}起\n🕒 **退房：** ${D.domo.out}前\n\n请遵守入住和退房时间。`}),
+    group:(l,e)=>P(l,{es:`👥 Cada domo recibe de **${D.domo.cap[0]} a ${D.domo.cap[1]} personas** (máximo ${D.domo.cap[1]}). Hay ${D.domo.units} domos independientes.`,en:`👥 Each dome sleeps **${D.domo.cap[0]} to ${D.domo.cap[1]} people** (maximum ${D.domo.cap[1]}). There are ${D.domo.units} separate domes.`,pt:`👥 Cada domo recebe de **${D.domo.cap[0]} a ${D.domo.cap[1]} pessoas** (máximo ${D.domo.cap[1]}). São ${D.domo.units} domos independentes.`,zh:`👥 每个圆顶可住**${D.domo.cap[0]}至${D.domo.cap[1]}人**（最多${D.domo.cap[1]}人）。共有${D.domo.units}个独立圆顶。`})+domoCalc(l,e),
+    age:l=>P(l,{es:`👨‍👩‍👧 Los domos están pensados para parejas, amigos y familias, con un máximo de ${D.domo.cap[1]} personas por domo. Para la cabalgata, la edad mínima es ${D.cab.minAge} años.`,en:`👨‍👩‍👧 Domes are made for couples, friends and families, with up to ${D.domo.cap[1]} people per dome. For the horseback ride, the minimum age is ${D.cab.minAge}.`,pt:`👨‍👩‍👧 Os domos são pensados para casais, amigos e famílias, com no máximo ${D.domo.cap[1]} pessoas por domo. Para a cavalgada, a idade mínima é ${D.cab.minAge} anos.`,zh:`👨‍👩‍👧 圆顶适合情侣、朋友和家庭入住，每个最多${D.domo.cap[1]}人。骑马活动最低年龄为${D.cab.minAge}岁。`}),
+    book:l=>P(l,{es:`📅 Las reservas de domos están **sujetas a disponibilidad** (${D.domo.units} domos). Puedes pagar en hasta ${D.domo.cuotas} cuotas y los cambios de fecha se hacen por reprogramación. Reserva en recepción o con Dreamers Travel.`,en:`📅 Dome bookings are **subject to availability** (${D.domo.units} domes). You can pay in up to ${D.domo.cuotas} installments, and date changes are handled by rescheduling. Book at reception or with Dreamers Travel.`,pt:`📅 As reservas de domos estão **sujeitas à disponibilidade** (${D.domo.units} domos). Você pode pagar em até ${D.domo.cuotas} parcelas e as mudanças de data são feitas por remarcação. Reserve na recepção ou com a Dreamers Travel.`,zh:`📅 圆顶预订**视空位情况而定**（共${D.domo.units}个）。可分最多${D.domo.cuotas}期付款，改期需重新安排。请在前台或通过Dreamers Travel预订。`}),
+    pay:(l,e)=>P(l,{es:`💳 La tarifa base del domo permite pagar en **hasta ${D.domo.cuotas} cuotas**, según las condiciones de contratación.`,en:`💳 The dome base rate can be paid in **up to ${D.domo.cuotas} installments**, under the booking conditions.`,pt:`💳 A tarifa base do domo pode ser paga em **até ${D.domo.cuotas} parcelas**, conforme as condições de contratação.`,zh:`💳 圆顶基本价格可按合同条件**分最多${D.domo.cuotas}期**付款。`})+domoCalc(l,e),
+    season:l=>P(l,{es:`📆 Para ver qué fechas hay disponibles en los domos, consulta en recepción o con Dreamers Travel. Las reservas están sujetas a disponibilidad.`,en:`📆 To check which dates are available for the domes, ask at reception or Dreamers Travel. Bookings are subject to availability.`,pt:`📆 Para ver as datas disponíveis nos domos, consulte a recepção ou a Dreamers Travel. As reservas estão sujeitas à disponibilidade.`,zh:`📆 圆顶的可订日期请咨询前台或Dreamers Travel。预订视空位情况而定。`}),
+    change:l=>P(l,{es:`🔄 Los cambios de fecha se gestionan mediante **reprogramación**, según las condiciones aplicables al servicio. Pídelo en recepción.`,en:`🔄 Date changes are handled by **rescheduling**, under the service conditions. Ask at reception.`,pt:`🔄 As mudanças de data são feitas por **remarcação**, conforme as condições do serviço. Peça na recepção.`,zh:`🔄 改期需按服务条款**重新安排**。请向前台申请。`}),
+    rules:l=>P(l,{es:`⚠️ **Normas de Nature’s Towers**\n• 🚭 No se permite fumar en los domos ni en el recinto\n• 🐾 No se admiten mascotas\n• Máximo ${D.domo.cap[1]} personas por domo\n• Respeta los horarios: check-in ${D.domo.in}, check-out ${D.domo.out}`,en:`⚠️ **Nature’s Towers rules**\n• 🚭 No smoking in the domes or anywhere on site\n• 🐾 No pets allowed\n• Maximum ${D.domo.cap[1]} people per dome\n• Please respect check-in ${D.domo.in} and check-out ${D.domo.out}`,pt:`⚠️ **Regras da Nature’s Towers**\n• 🚭 Proibido fumar nos domos e em todo o local\n• 🐾 Não aceitamos animais de estimação\n• Máximo de ${D.domo.cap[1]} pessoas por domo\n• Respeite os horários: check-in ${D.domo.in}, check-out ${D.domo.out}`,zh:`⚠️ **Nature’s Towers 规定**\n• 🚭 圆顶内及营地内禁止吸烟\n• 🐾 不允许携带宠物\n• 每个圆顶最多${D.domo.cap[1]}人\n• 请遵守入住${D.domo.in}、退房${D.domo.out}的时间`})
+  },
+  trans:{over:l=>P(l,{
+    es:`🚐 **Transporte privado:** +${money(D.transport.price)}\nSujeto a disponibilidad y coordinación previa. Incluye un itinerario acordado y disponibilidad de ${D.transport.hours} horas diarias.\n\nLa cabalgata ya incluye traslado ida y vuelta desde Nature’s Towers. Coordina el transporte en recepción.`,
+    en:`🚐 **Private transport:** +${money(D.transport.price)}\nSubject to availability and prior arrangement. Includes an agreed itinerary and ${D.transport.hours} hours of availability per day.\n\nThe horseback ride already includes a round-trip transfer from Nature’s Towers. Arrange transport at reception.`,
+    pt:`🚐 **Transporte privado:** +${money(D.transport.price)}\nSujeito à disponibilidade e combinação prévia. Inclui um roteiro combinado e disponibilidade de ${D.transport.hours} horas por dia.\n\nA cavalgada já inclui traslado de ida e volta da Nature’s Towers. Combine o transporte na recepção.`,
+    zh:`🚐 **私人交通：** +${money(D.transport.price)}\n视空位情况并需提前安排。含约定行程，每天可用${D.transport.hours}小时。\n\n骑马活动已含Nature’s Towers往返接送。请在前台安排交通。`})},
+  pkgs:{over:l=>P(l,{
+    es:`🗺️ **Paquetes de Dreamers Travel en Torres del Paine**\n• Circuito W Clásico (4–5 días): desde ${money(950)}\n• Circuito W Premium (4–5 días): desde ${money(1120)}\n• Circuito O – Macizo Paine (7–9 días): desde ${money(1960)}\n• Patagonia Domes Experience (4–7 días): desde ${money(1030)}\n\nPrecios por persona. Pide más información en recepción.`,
+    en:`🗺️ **Dreamers Travel packages in Torres del Paine**\n• Classic W Trek (4–5 days): from ${money(950)}\n• Premium W Trek (4–5 days): from ${money(1120)}\n• O Circuit – Paine Massif (7–9 days): from ${money(1960)}\n• Patagonia Domes Experience (4–7 days): from ${money(1030)}\n\nPrices per person. Ask at reception for details.`,
+    pt:`🗺️ **Pacotes da Dreamers Travel em Torres del Paine**\n• Circuito W Clássico (4–5 dias): a partir de ${money(950)}\n• Circuito W Premium (4–5 dias): a partir de ${money(1120)}\n• Circuito O – Maciço Paine (7–9 dias): a partir de ${money(1960)}\n• Patagonia Domes Experience (4–7 dias): a partir de ${money(1030)}\n\nPreços por pessoa. Peça mais informações na recepção.`,
+    zh:`🗺️ **Dreamers Travel 百内国家公园套餐**\n• 经典W线（4–5天）：${money(950)}起\n• 高级W线（4–5天）：${money(1120)}起\n• O线环线 – 潘恩山群（7–9天）：${money(1960)}起\n• 巴塔哥尼亚圆顶体验（4–7天）：${money(1030)}起\n\n以上为每人价格。详情请咨询前台。`})},
+  park:{over:l=>P(l,{
+    es:`🎟️ **La entrada al Parque Nacional Torres del Paine no está incluida** en la estadía. Se compra aparte en CONAF, que administra el parque, antes de ingresar. Revisa la tarifa vigente con CONAF; varía según temporada y nacionalidad.`,
+    en:`🎟️ **Torres del Paine National Park entrance is not included** in your stay. Buy it separately from CONAF, which manages the park, before you enter. Check the current fee with CONAF; it varies by season and nationality.`,
+    pt:`🎟️ **A entrada do Parque Nacional Torres del Paine não está incluída** na estadia. Ela é comprada à parte na CONAF, que administra o parque, antes de entrar. Confira a tarifa vigente com a CONAF; ela varia conforme a temporada e a nacionalidade.`,
+    zh:`🎟️ **住宿不含百内国家公园门票。** 门票需在入园前向管理公园的CONAF另行购买。现行票价随季节和国籍而定，请向CONAF确认。`})}
+};
+const FACET_ONLY={
+  price:(l,e)=>P(l,{es:`💵 **Precios en Nature’s Towers**\n• Domo privado: **${money(D.domo.price)}** por domo (${D.domo.cap[0]}–${D.domo.cap[1]} personas)\n• Cabalgata: **${money(D.cab.adult)}** adultos · **${money(D.cab.kid)}** niños\n• Transporte privado: **${money(D.transport.price)}**`,
+    en:`💵 **Prices at Nature’s Towers**\n• Private dome: **${money(D.domo.price)}** per dome (${D.domo.cap[0]}–${D.domo.cap[1]} people)\n• Horseback ride: **${money(D.cab.adult)}** adults · **${money(D.cab.kid)}** children\n• Private transport: **${money(D.transport.price)}**`,
+    pt:`💵 **Preços na Nature’s Towers**\n• Domo privado: **${money(D.domo.price)}** por domo (${D.domo.cap[0]}–${D.domo.cap[1]} pessoas)\n• Cavalgada: **${money(D.cab.adult)}** adultos · **${money(D.cab.kid)}** crianças\n• Transporte privado: **${money(D.transport.price)}**`,
+    zh:`💵 **Nature’s Towers 价格**\n• 私人圆顶：每个**${money(D.domo.price)}**（${D.domo.cap[0]}–${D.domo.cap[1]}人）\n• 骑马：成人**${money(D.cab.adult)}** · 儿童**${money(D.cab.kid)}**\n• 私人交通：**${money(D.transport.price)}**`})+((e.people||e.adults||e.kids)?domoCalc(l,e)+cabCalc(l,e):''),
+  time:l=>P(l,{es:`🕒 **Horarios**\n• Check-in domo: desde las ${D.domo.in}\n• Check-out domo: hasta las ${D.domo.out}\n• Cabalgata: según temporada y salida reservada`,en:`🕒 **Times**\n• Dome check-in: from ${D.domo.in}\n• Dome check-out: until ${D.domo.out}\n• Horseback ride: depends on season and booked ride`,pt:`🕒 **Horários**\n• Check-in do domo: a partir das ${D.domo.in}\n• Check-out do domo: até as ${D.domo.out}\n• Cavalgada: conforme a temporada e a saída reservada`,zh:`🕒 **时间**\n• 圆顶入住：${D.domo.in}起\n• 圆顶退房：${D.domo.out}前\n• 骑马：随季节及所订班次而定`}),
+  pay:l=>P(l,{es:`💳 **Pago en cuotas**\n• Domo: hasta ${D.domo.cuotas} cuotas\n• Cabalgata: hasta ${D.cab.cuotas} cuotas\nSegún las condiciones de contratación.`,en:`💳 **Installment options**\n• Dome: up to ${D.domo.cuotas} installments\n• Horseback ride: up to ${D.cab.cuotas} installments\nUnder the booking conditions.`,pt:`💳 **Pagamento parcelado**\n• Domo: até ${D.domo.cuotas} parcelas\n• Cavalgada: até ${D.cab.cuotas} parcelas\nConforme as condições de contratação.`,zh:`💳 **分期付款**\n• 圆顶：最多${D.domo.cuotas}期\n• 骑马：最多${D.cab.cuotas}期\n按合同条件执行。`}),
+  book:l=>P(l,{es:`📅 **Reservas**\n• Domos: sujetos a disponibilidad; cambios por reprogramación\n• Cabalgata: con al menos ${D.cab.advance} días de anticipación\nPuedes reservar en recepción o con Dreamers Travel.`,en:`📅 **Bookings**\n• Domes: subject to availability; date changes by rescheduling\n• Horseback ride: at least ${D.cab.advance} days in advance\nBook at reception or with Dreamers Travel.`,pt:`📅 **Reservas**\n• Domos: sujeitos à disponibilidade; mudanças por remarcação\n• Cavalgada: com pelo menos ${D.cab.advance} dias de antecedência\nReserve na recepção ou com a Dreamers Travel.`,zh:`📅 **预订**\n• 圆顶：视空位情况而定；改期需重新安排\n• 骑马：至少提前${D.cab.advance}天\n请在前台或通过Dreamers Travel预订。`}),
+  group:(l,e)=>P(l,{es:`👥 **Capacidades**\n• Domo: ${D.domo.cap[0]} a ${D.domo.cap[1]} personas\n• Cabalgata: grupos de ${D.cab.group[0]} a ${D.cab.group[1]} personas`,en:`👥 **Capacity**\n• Dome: ${D.domo.cap[0]} to ${D.domo.cap[1]} people\n• Horseback ride: groups of ${D.cab.group[0]} to ${D.cab.group[1]}`,pt:`👥 **Capacidades**\n• Domo: ${D.domo.cap[0]} a ${D.domo.cap[1]} pessoas\n• Cavalgada: grupos de ${D.cab.group[0]} a ${D.cab.group[1]} pessoas`,zh:`👥 **容量**\n• 圆顶：${D.domo.cap[0]}至${D.domo.cap[1]}人\n• 骑马：每团${D.cab.group[0]}至${D.cab.group[1]}人`})+domoCalc(l,e),
+  incl:l=>P(l,{es:`¿Sobre qué quieres saber qué incluye?`,en:`What would you like to know the inclusions of?`,pt:`Sobre o que você quer saber o que está incluído?`,zh:`您想了解哪一项包含的内容？`}),
+  rules:l=>T.domo.rules(l)
+};
+const FACET_DEFAULT_TOPIC={age:'cab',dur:'cab',season:'cab',change:'domo'};
+
+const hourGreet=l=>{const h=new Date().getHours();return P(l,{es:h<12?'¡Buenos días':h<20?'¡Buenas tardes':'¡Buenas noches',en:h<12?'Good morning':h<18?'Good afternoon':'Good evening',pt:h<12?'Bom dia':h<18?'Boa tarde':'Boa noite',zh:h<12?'早上好':h<18?'下午好':'晚上好'})};
+const I={
+  hello:l=>P(l,{es:`${hourGreet(l)}! 👋🌿 Soy Natura. ¿En qué te ayudo?`,en:`${hourGreet(l)}! 👋🌿 I’m Natura. How can I help?`,pt:`${hourGreet(l)}! 👋🌿 Sou a Natura. Como posso ajudar?`,zh:`${hourGreet(l)}！👋🌿 我是Natura，有什么可以帮您？`}),
+  thanks:l=>P(l,{es:`¡Con gusto! 🌿 Si necesitas algo más, aquí estoy. Que disfrutes la Patagonia.`,en:`You’re welcome! 🌿 I’m here if you need anything else. Enjoy Patagonia.`,pt:`De nada! 🌿 Se precisar de mais alguma coisa, estou aqui. Aproveite a Patagônia.`,zh:`不客气！🌿 还有需要随时问我。祝您在巴塔哥尼亚玩得开心。`}),
+  bye:l=>P(l,{es:`¡Que tengas un gran día en Torres del Paine! 🏔️ Vuelve cuando quieras.`,en:`Have a great day in Torres del Paine! 🏔️ Come back anytime.`,pt:`Tenha um ótimo dia em Torres del Paine! 🏔️ Volte quando quiser.`,zh:`祝您在百内国家公园度过美好的一天！🏔️ 欢迎随时回来。`}),
+  who:l=>P(l,{es:`Soy **Natura** 🌿, el asistente virtual de Nature’s Towers. Te ayudo antes, durante y después de tu estadía con:\n• Domos, horarios y qué incluye\n• Cabalgata, tarifas y temporadas\n• Comidas, Wi-Fi y normas\n• Clima, qué llevar y seguridad\n• Emergencias\n\nEscribe tu pregunta en español, inglés, portugués o chino.`,
+    en:`I’m **Natura** 🌿, the Nature’s Towers virtual assistant. I can help before, during and after your stay with:\n• Domes, times and what’s included\n• Horseback ride, rates and seasons\n• Meals, Wi-Fi and house rules\n• Weather, what to bring and safety\n• Emergencies\n\nAsk me in English, Spanish, Portuguese or Chinese.`,
+    pt:`Sou a **Natura** 🌿, a assistente virtual da Nature’s Towers. Posso ajudar antes, durante e depois da sua estadia com:\n• Domos, horários e o que está incluído\n• Cavalgada, tarifas e temporadas\n• Refeições, Wi-Fi e regras\n• Clima, o que levar e segurança\n• Emergências\n\nPergunte em português, espanhol, inglês ou chinês.`,
+    zh:`我是**Natura** 🌿，Nature’s Towers 的虚拟助手。在您入住前、入住期间和离开后，我可以帮您了解：\n• 圆顶屋、时间和包含内容\n• 骑马活动、价格和季节\n• 餐食、Wi-Fi和规定\n• 天气、携带物品和安全\n• 紧急情况\n\n可以用中文、英语、西班牙语或葡萄牙语提问。`}),
+  help:l=>P(l,{es:`Elige un tema o escribe tu pregunta 👇`,en:`Pick a topic or type your question 👇`,pt:`Escolha um tema ou escreva sua pergunta 👇`,zh:`请选择一个主题或直接输入问题 👇`}),
+  food:l=>P(l,{es:`🍽️ **Comidas incluidas en tu estadía**\n• Desayuno continental diario\n• Cena servida en tu domo\n\nSi tienes una dieta especial (vegetariana, vegana, sin gluten) o alguna alergia, avísalo en recepción. Para almuerzos o snacks para el sendero, consulta también en recepción.`,
+    en:`🍽️ **Meals included in your stay**\n• Daily continental breakfast\n• Dinner served in your dome\n\nIf you have a special diet (vegetarian, vegan, gluten-free) or an allergy, let reception know. For lunch or trail snacks, also ask at reception.`,
+    pt:`🍽️ **Refeições incluídas na estadia**\n• Café da manhã continental diário\n• Jantar servido no seu domo\n\nSe você tem uma dieta especial (vegetariana, vegana, sem glúten) ou alguma alergia, avise a recepção. Para almoço ou lanches para a trilha, consulte também a recepção.`,
+    zh:`🍽️ **住宿包含的餐食**\n• 每日欧陆式早餐\n• 送到圆顶的晚餐\n\n如有特殊饮食（素食、纯素、无麸质）或过敏，请告知前台。午餐或徒步零食也请咨询前台。`}),
+  wifi:l=>P(l,{es:`📶 **Sí, hay Wi-Fi** en las instalaciones de Nature’s Towers. Pide la clave en recepción.\n\nDentro del parque la señal de celular es muy limitada, así que descarga tus mapas antes de salir.`,en:`📶 **Yes, there’s Wi-Fi** on the Nature’s Towers premises. Ask reception for the password.\n\nInside the park, mobile signal is very limited, so download your maps before heading out.`,pt:`📶 **Sim, tem Wi-Fi** nas instalações da Nature’s Towers. Peça a senha na recepção.\n\nDentro do parque o sinal de celular é muito limitado, então baixe seus mapas antes de sair.`,zh:`📶 **有Wi-Fi**，覆盖Nature’s Towers营地。密码请向前台索取。\n\n公园内手机信号非常有限，出发前请先下载离线地图。`}),
+  signal:l=>P(l,{es:`📵 La señal de celular en Torres del Paine es **muy limitada** y en muchos senderos no hay cobertura.\n• En Nature’s Towers tienes Wi-Fi\n• Descarga mapas sin conexión antes de salir\n• Avisa en recepción tu ruta y hora de regreso`,en:`📵 Mobile signal in Torres del Paine is **very limited**, and many trails have no coverage.\n• Nature’s Towers has Wi-Fi\n• Download offline maps before heading out\n• Tell reception your route and return time`,pt:`📵 O sinal de celular em Torres del Paine é **muito limitado** e muitas trilhas não têm cobertura.\n• Na Nature’s Towers tem Wi-Fi\n• Baixe mapas offline antes de sair\n• Avise a recepção sobre sua rota e horário de volta`,zh:`📵 百内国家公园的手机信号**非常有限**，许多步道没有信号。\n• Nature’s Towers 有Wi-Fi\n• 出发前下载离线地图\n• 告知前台您的路线和返回时间`}),
+  parking:l=>P(l,{es:`🅿️ **Sí, hay estacionamiento privado** incluido en tu estadía.`,en:`🅿️ **Yes, private parking** is included in your stay.`,pt:`🅿️ **Sim, tem estacionamento privado** incluído na estadia.`,zh:`🅿️ **有私人停车位**，已包含在住宿中。`}),
+  pets:l=>P(l,{es:`🐾 Lo sentimos: **no se admiten mascotas** en Nature’s Towers.`,en:`🐾 Sorry: **pets are not allowed** at Nature’s Towers.`,pt:`🐾 Desculpe: **não aceitamos animais de estimação** na Nature’s Towers.`,zh:`🐾 抱歉：Nature’s Towers **不允许携带宠物**。`}),
+  smoke:l=>P(l,{es:`🚭 **No se permite fumar** dentro de los domos ni en ninguna parte del recinto. Gracias por cuidar el entorno.`,en:`🚭 **Smoking is not allowed** inside the domes or anywhere on site. Thanks for protecting this place.`,pt:`🚭 **É proibido fumar** dentro dos domos e em qualquer parte do local. Obrigado por cuidar do ambiente.`,zh:`🚭 圆顶内及营地任何地方**禁止吸烟**。感谢您爱护环境。`}),
+  weather:l=>P(l,{es:`🌦️ **El clima patagónico cambia muy rápido**, incluso varias veces en un día.\n• En temporada alta (dic–feb) las temperaturas suelen ir de 2 a 18 °C\n• El viento puede superar los 80 km/h\n• Puede llover o nevar en cualquier época\n\nVístete por capas y pregunta el pronóstico del día en recepción. La cabalgata puede suspenderse por mal tiempo.`,
+    en:`🌦️ **Patagonian weather changes fast**, sometimes several times a day.\n• In high season (Dec–Feb) temperatures usually range from 2 to 18 °C (36–64 °F)\n• Wind can exceed 80 km/h (50 mph)\n• Rain or snow is possible any time of year\n\nDress in layers and ask reception for today’s forecast. The horseback ride may be suspended in bad weather.`,
+    pt:`🌦️ **O clima da Patagônia muda muito rápido**, às vezes várias vezes no mesmo dia.\n• Na alta temporada (dez–fev) as temperaturas costumam ficar entre 2 e 18 °C\n• O vento pode passar de 80 km/h\n• Pode chover ou nevar em qualquer época\n\nVista-se em camadas e pergunte a previsão do dia na recepção. A cavalgada pode ser suspensa por mau tempo.`,
+    zh:`🌦️ **巴塔哥尼亚的天气变化很快**，一天之内可能变好几次。\n• 旺季（12月至2月）气温通常在2至18°C之间\n• 风速可超过每小时80公里\n• 任何季节都可能下雨或下雪\n\n请多层穿衣，并向前台询问当天的天气预报。天气恶劣时骑马活动可能取消。`}),
+  pack:l=>P(l,{es:`🎒 **Qué llevar**\n• Chaqueta impermeable y cortaviento\n• Capa térmica (polar o pluma)\n• Gorro, guantes y buff\n• Botas de trekking ya usadas\n• Bloqueador solar y lentes de sol\n• Botella reutilizable\n• Mochila pequeña para el día\n\n🐎 **Para la cabalgata:** pantalón largo y zapatos cerrados. El casco te lo entregamos.`,
+    en:`🎒 **What to bring**\n• Waterproof, windproof jacket\n• Warm layer (fleece or down)\n• Hat, gloves and neck gaiter\n• Broken-in hiking boots\n• Sunscreen and sunglasses\n• Reusable water bottle\n• Small daypack\n\n🐎 **For the horseback ride:** long pants and closed shoes. We provide the helmet.`,
+    pt:`🎒 **O que levar**\n• Jaqueta impermeável e corta-vento\n• Camada térmica (fleece ou pluma)\n• Gorro, luvas e bandana de pescoço\n• Botas de trilha já amaciadas\n• Protetor solar e óculos de sol\n• Garrafa reutilizável\n• Mochila pequena para o dia\n\n🐎 **Para a cavalgada:** calça comprida e sapato fechado. O capacete nós fornecemos.`,
+    zh:`🎒 **需要携带的物品**\n• 防水防风外套\n• 保暖层（抓绒或羽绒）\n• 帽子、手套和围脖\n• 穿惯的徒步鞋\n• 防晒霜和太阳镜\n• 可重复使用的水瓶\n• 小型日用背包\n\n🐎 **骑马时：** 请穿长裤和包头鞋。头盔由我们提供。`}),
+  sos:l=>({sos:true,text:P(l,{es:`🆘 **En una emergencia**\n• **131** Ambulancia (SAMU)\n• **132** Bomberos\n• **133** Carabineros\n\n1. Mantén la calma y quédate en un lugar seguro.\n2. Si no tienes señal, avisa a tu guía, a otros excursionistas o a un guardaparques.\n3. Si estás en Nature’s Towers, acude de inmediato a recepción.\n4. No te separes del sendero ni de tu grupo.`,
+    en:`🆘 **In an emergency (Chile)**\n• **131** Ambulance (SAMU)\n• **132** Fire department\n• **133** Police (Carabineros)\n\n1. Stay calm and move to a safe spot.\n2. If you have no signal, tell your guide, other hikers or a park ranger.\n3. If you’re at Nature’s Towers, go to reception right away.\n4. Don’t leave the trail or your group.`,
+    pt:`🆘 **Em uma emergência (Chile)**\n• **131** Ambulância (SAMU)\n• **132** Bombeiros\n• **133** Polícia (Carabineros)\n\n1. Mantenha a calma e fique em um lugar seguro.\n2. Se não tiver sinal, avise seu guia, outros caminhantes ou um guarda-parque.\n3. Se estiver na Nature’s Towers, vá imediatamente à recepção.\n4. Não saia da trilha nem se separe do grupo.`,
+    zh:`🆘 **紧急情况（智利）**\n• **131** 救护车（SAMU）\n• **132** 消防\n• **133** 警察（Carabineros）\n\n1. 保持冷静，待在安全的地方。\n2. 如果没有信号，请告知向导、其他徒步者或公园护林员。\n3. 如果您在Nature’s Towers，请立即前往前台。\n4. 不要离开步道或团队。`})}),
+  wildlife:l=>P(l,{es:`🦙 En Torres del Paine puedes ver guanacos, cóndores, ñandúes, zorros y, con suerte, pumas.\n\n**Si ves un puma:**\n• No corras ni le des la espalda\n• Mantén a los niños a tu lado\n• Hazte ver grande y retrocede despacio\n\nNunca alimentes a los animales y mantén la distancia.`,
+    en:`🦙 In Torres del Paine you can spot guanacos, condors, rheas, foxes and, if you’re lucky, pumas.\n\n**If you see a puma:**\n• Don’t run or turn your back\n• Keep children close\n• Make yourself look big and back away slowly\n\nNever feed wildlife and keep your distance.`,
+    pt:`🦙 Em Torres del Paine você pode ver guanacos, condores, emas, raposas e, com sorte, pumas.\n\n**Se você vir um puma:**\n• Não corra nem dê as costas\n• Mantenha as crianças perto de você\n• Pareça maior e recue devagar\n\nNunca alimente os animais e mantenha distância.`,
+    zh:`🦙 在百内国家公园可以看到原驼、秃鹰、美洲鸵、狐狸，运气好还能看到美洲狮。\n\n**如果遇到美洲狮：**\n• 不要跑，也不要背对它\n• 让孩子待在身边\n• 让自己显得高大，慢慢后退\n\n请勿喂食野生动物，并保持距离。`}),
+  green:l=>P(l,{es:`🌿 **Turismo responsable**\n• 🔥 Está prohibido hacer fuego en el parque\n• Llévate toda tu basura de vuelta\n• Camina solo por senderos marcados\n• No alimentes a la fauna\n• Usa botella reutilizable`,en:`🌿 **Responsible travel**\n• 🔥 Fires are prohibited in the park\n• Pack out all your trash\n• Stay on marked trails\n• Don’t feed wildlife\n• Use a reusable bottle`,pt:`🌿 **Turismo responsável**\n• 🔥 É proibido fazer fogo no parque\n• Leve todo o seu lixo de volta\n• Caminhe só pelas trilhas sinalizadas\n• Não alimente os animais\n• Use garrafa reutilizável`,zh:`🌿 **负责任的旅行**\n• 🔥 公园内禁止生火\n• 带走所有垃圾\n• 只走标记的步道\n• 不要喂食野生动物\n• 使用可重复使用的水瓶`}),
+  safety:l=>P(l,{es:`🧭 **Consejos de seguridad**\n• Avisa en recepción tu ruta y hora de regreso\n• Revisa el pronóstico antes de salir\n• No camines solo al atardecer\n• Lleva agua, abrigo y snacks\n• Con viento muy fuerte, agáchate y aléjate de los bordes\n\nEn una emergencia, escribe «emergencia».`,en:`🧭 **Safety tips**\n• Tell reception your route and return time\n• Check the forecast before heading out\n• Don’t hike alone at dusk\n• Bring water, warm layers and snacks\n• In very strong wind, crouch down and stay away from edges\n\nIn an emergency, type “emergency”.`,pt:`🧭 **Dicas de segurança**\n• Avise a recepção sobre sua rota e horário de volta\n• Confira a previsão antes de sair\n• Não caminhe sozinho ao entardecer\n• Leve água, agasalho e lanches\n• Com vento muito forte, abaixe-se e afaste-se das bordas\n\nEm uma emergência, escreva «emergência».`,zh:`🧭 **安全提示**\n• 告知前台您的路线和返回时间\n• 出发前查看天气预报\n• 黄昏时不要独自徒步\n• 带上水、保暖衣物和零食\n• 遇到强风请蹲低并远离边缘\n\n紧急情况请输入“紧急”。`}),
+  experience:l=>P(l,{es:`🐎 **No necesitas experiencia previa** para la cabalgata. Antes de comenzar recibes instrucciones básicas y el equipo de seguridad, y te acompañan un guía especializado y baqueanos.`,en:`🐎 **No riding experience needed.** Before starting you get basic instructions and safety gear, and a specialist guide and baqueanos ride with you.`,pt:`🐎 **Não precisa de experiência** para a cavalgada. Antes de começar você recebe instruções básicas e equipamento de segurança, e vai acompanhado por um guia especializado e baqueanos.`,zh:`🐎 **骑马无需经验。** 出发前会有基本讲解并提供安全装备，全程由专业向导和当地牧马人陪同。`}),
+  base:l=>P(l,{es:`🏔️ **Mirador Base Torres**: las tres torres de granito sobre una laguna glaciar, el ícono del parque. Son ≈ 19 km ida y vuelta (8–10 horas), con una subida final exigente.\n\nLas excursiones guiadas no están incluidas en el domo. Dreamers Travel la incluye en sus paquetes del Circuito W y O.`,en:`🏔️ **Base Torres viewpoint**: three granite towers above a glacial lagoon, the park’s icon. ≈ 19 km round trip (8–10 hours), with a steep final climb.\n\nGuided tours aren’t included with the dome. Dreamers Travel includes it in its W and O trek packages.`,pt:`🏔️ **Mirante Base Torres**: as três torres de granito sobre uma lagoa glacial, o ícone do parque. São ≈ 19 km ida e volta (8–10 horas), com uma subida final exigente.\n\nPasseios guiados não estão incluídos no domo. A Dreamers Travel inclui esse passeio nos pacotes do Circuito W e O.`,zh:`🏔️ **三塔观景台（Base Torres）**：冰川湖上方的三座花岗岩塔峰，是公园的标志。往返约19公里（8–10小时），最后一段上坡较陡。\n\n圆顶住宿不含导览游。Dreamers Travel 的W线和O线套餐包含此行程。`}),
+  grey:l=>P(l,{es:`🧊 **Glaciar Grey**: paredes de hielo azul del Campo de Hielo Patagónico Sur, con témpanos flotando en el lago Grey. Se puede ver desde miradores en el sendero o en navegación.\n\nPide información de excursiones en recepción.`,en:`🧊 **Grey Glacier**: blue ice walls from the Southern Patagonian Ice Field, with icebergs floating on Lake Grey. You can see it from trail viewpoints or on a boat trip.\n\nAsk reception about excursions.`,pt:`🧊 **Geleira Grey**: paredes de gelo azul do Campo de Gelo Patagônico Sul, com icebergs flutuando no lago Grey. Dá para ver de mirantes na trilha ou em passeio de barco.\n\nPeça informações sobre passeios na recepção.`,zh:`🧊 **格雷冰川**：来自南巴塔哥尼亚冰原的蓝色冰墙，格雷湖上漂浮着浮冰。可在步道观景点或乘船观赏。\n\n游览信息请咨询前台。`}),
+  frances:l=>P(l,{es:`⛰️ **Valle del Francés**: un anfiteatro rodeado por los Cuernos del Paine y glaciares colgantes. Es parte del Circuito W.\n\nPide información de excursiones en recepción.`,en:`⛰️ **French Valley**: an amphitheater surrounded by the Cuernos del Paine and hanging glaciers. It’s part of the W Trek.\n\nAsk reception about excursions.`,pt:`⛰️ **Vale do Francês**: um anfiteatro cercado pelos Cuernos del Paine e geleiras suspensas. Faz parte do Circuito W.\n\nPeça informações sobre passeios na recepção.`,zh:`⛰️ **法国谷**：被潘恩角峰和悬冰川环绕的圆形山谷，是W线的一部分。\n\n游览信息请咨询前台。`}),
+  todo:l=>P(l,{es:`🥾 **Qué hacer desde Nature’s Towers**\n• 🐎 Cabalgata por la estepa (≈ 3 h)\n• 🏔️ Mirador Base Torres\n• 🧊 Glaciar Grey\n• ⛰️ Valle del Francés\n• 🦙 Observación de fauna\n\nLas excursiones guiadas al parque se contratan aparte. ¿De cuál quieres saber más?`,en:`🥾 **Things to do from Nature’s Towers**\n• 🐎 Horseback ride on the steppe (≈ 3 h)\n• 🏔️ Base Torres viewpoint\n• 🧊 Grey Glacier\n• ⛰️ French Valley\n• 🦙 Wildlife watching\n\nGuided park tours are booked separately. Which one would you like to know more about?`,pt:`🥾 **O que fazer a partir da Nature’s Towers**\n• 🐎 Cavalgada pela estepe (≈ 3 h)\n• 🏔️ Mirante Base Torres\n• 🧊 Geleira Grey\n• ⛰️ Vale do Francês\n• 🦙 Observação de fauna\n\nOs passeios guiados no parque são contratados à parte. Sobre qual você quer saber mais?`,zh:`🥾 **从Nature’s Towers出发可以做什么**\n• 🐎 草原骑马（约3小时）\n• 🏔️ 三塔观景台\n• 🧊 格雷冰川\n• ⛰️ 法国谷\n• 🦙 观赏野生动物\n\n公园导览游需另行预订。您想了解哪一个？`}),
+  reception:l=>P(l,{es:`🛎️ Nature’s Towers tiene **recepción y asistencia turística** incluida en tu estadía. Acércate cuando quieras para reservas, pronóstico, excursiones o cualquier problema.`,en:`🛎️ Nature’s Towers offers **reception and tourist assistance** as part of your stay. Drop by anytime for bookings, forecasts, excursions or any issue.`,pt:`🛎️ A Nature’s Towers tem **recepção e assistência turística** incluídas na estadia. Passe lá quando quiser para reservas, previsão do tempo, passeios ou qualquer problema.`,zh:`🛎️ Nature’s Towers 的住宿包含**前台及旅游协助**。预订、天气预报、游览或任何问题都可以随时到前台咨询。`}),
+  dreamers:l=>P(l,{es:`🤝 **Dreamers Travel** es la agencia de viajes que organiza experiencias de aventura y naturaleza en Torres del Paine. Nature’s Towers es su alojamiento asociado, y yo soy el asistente del ecocamp.`,en:`🤝 **Dreamers Travel** is the travel agency that organizes adventure and nature experiences in Torres del Paine. Nature’s Towers is its partner lodging, and I’m the ecocamp’s assistant.`,pt:`🤝 A **Dreamers Travel** é a agência de viagens que organiza experiências de aventura e natureza em Torres del Paine. A Nature’s Towers é sua hospedagem parceira, e eu sou a assistente do ecocamp.`,zh:`🤝 **Dreamers Travel** 是在百内国家公园组织探险与自然体验的旅行社。Nature’s Towers 是其合作住宿，我是营地的助手。`})+'\n\n'+T.pkgs.over(l).split('\n').slice(1,5).join('\n')
+};
+
+/* sugerencias de seguimiento (todas deben ser entendidas por el motor) */
+const CH={
+  es:{cab:['¿Cuánto cuesta para 2 adultos y 1 niño?','¿Qué incluye la cabalgata?','¿En qué fechas opera la cabalgata?','¿Qué ropa llevo?'],
+      domo:['¿Qué incluye el domo?','Somos 4, ¿cuánto sale el domo?','¿A qué hora es el check-out?','¿Se puede pagar en cuotas?'],
+      trans:['¿Qué incluye el domo?','¿Qué incluye la cabalgata?'],pkgs:['Cuéntame de la cabalgata','¿Qué incluye el domo?'],park:['¿Qué incluye el domo?','¿Qué puedo hacer?'],
+      gen:['Cuéntame del domo','Cuéntame de la cabalgata','¿Cuáles son los precios?','¿Cómo es el clima?'],
+      food:['¿Hay Wi-Fi?','¿A qué hora es el check-out?'],weather:['¿Qué debo llevar?','¿Se suspende la cabalgata?'],pack:['¿Cómo es el clima?','Cuéntame de la cabalgata'],
+      sos:['Consejos de seguridad','¿Hay señal de celular?'],todo:['Cuéntame de la cabalgata','Base Torres','Glaciar Grey'],wildlife:['Consejos de seguridad'],
+      incl:['¿Qué incluye el domo?','¿Qué incluye la cabalgata?']},
+  en:{cab:['Price for 2 adults and 1 child?','What does the ride include?','When does the horseback ride run?','What should I wear?'],
+      domo:['What does the dome include?','We are 4, how much is the dome?','What time is check-out?','Can I pay in installments?'],
+      trans:['What does the dome include?','What does the ride include?'],pkgs:['Tell me about the horseback ride','What does the dome include?'],park:['What does the dome include?','What can I do here?'],
+      gen:['Tell me about the dome','Tell me about the horseback ride','What are the prices?','What’s the weather like?'],
+      food:['Is there Wi-Fi?','What time is check-out?'],weather:['What should I bring?','Is the ride cancelled in bad weather?'],pack:['What’s the weather like?','Tell me about the horseback ride'],
+      sos:['Safety tips','Is there phone signal?'],todo:['Tell me about the horseback ride','Base Torres','Grey Glacier'],wildlife:['Safety tips'],
+      incl:['What does the dome include?','What does the ride include?']},
+  pt:{cab:['Quanto custa para 2 adultos e 1 criança?','O que a cavalgada inclui?','Em que datas funciona a cavalgada?','Que roupa eu levo?'],
+      domo:['O que o domo inclui?','Somos 4, quanto custa o domo?','Que horas é o check-out?','Posso pagar parcelado?'],
+      trans:['O que o domo inclui?','O que a cavalgada inclui?'],pkgs:['Fale sobre a cavalgada','O que o domo inclui?'],park:['O que o domo inclui?','O que posso fazer aqui?'],
+      gen:['Fale sobre o domo','Fale sobre a cavalgada','Quais são os preços?','Como está o clima?'],
+      food:['Tem Wi-Fi?','Que horas é o check-out?'],weather:['O que devo levar?','A cavalgada é cancelada com mau tempo?'],pack:['Como está o clima?','Fale sobre a cavalgada'],
+      sos:['Dicas de segurança','Tem sinal de celular?'],todo:['Fale sobre a cavalgada','Base Torres','Geleira Grey'],wildlife:['Dicas de segurança'],
+      incl:['O que o domo inclui?','O que a cavalgada inclui?']},
+  zh:{cab:['2个大人和1个孩子骑马多少钱？','骑马包括什么？','骑马什么季节开放？','穿什么衣服？'],
+      domo:['圆顶包括什么？','我们4个人，圆顶多少钱？','几点退房？','可以分期付款吗？'],
+      trans:['圆顶包括什么？','骑马包括什么？'],pkgs:['介绍一下骑马','圆顶包括什么？'],park:['圆顶包括什么？','可以做什么？'],
+      gen:['介绍一下圆顶住宿','介绍一下骑马','价格是多少？','天气怎么样？'],
+      food:['有Wi-Fi吗？','几点退房？'],weather:['需要带什么？','天气不好骑马会取消吗？'],pack:['天气怎么样？','介绍一下骑马'],
+      sos:['安全提示','有手机信号吗？'],todo:['介绍一下骑马','三塔观景台','格雷冰川'],wildlife:['安全提示'],
+      incl:['圆顶包括什么？','骑马包括什么？']}
+};
+
+/* =========================================================
+   MOTOR
+   ========================================================= */
+const ctx={topic:null};
+function best(map,n,stems){const out=[];for(const k in map){const s=score(map[k],n,stems);if(s>0)out.push([k,s])}return out.sort((a,b)=>b[1]-a[1])}
+function pack(r,chips){return typeof r==='object'?{text:r.text,sos:r.sos,chips}:{text:r,chips}}
+function respond(raw,l){
+  const n=norm(raw), toks=n.trim().split(' ').filter(Boolean), stems=toks.map(stem), e=entities(n);
+  const tp=best(TOPICS,n,stems), fc=best(FACETS,n,stems), it=best(INTENTS,n,stems);
+  const TH=.9, topS=tp[0]?tp[0][1]:0, facS=fc[0]?fc[0][1]:0, intS=it[0]?it[0][1]:0;
+  if(it[0]&&it[0][0]==='sos'&&intS>=2){ctx.topic=null;return pack(I.sos(l),CH[l].sos)}
+  const small=['hello','thanks','bye','help'];
+  if(intS>=TH){
+    const id=it[0][0], isSmall=small.includes(id);
+    const wins=intS>=Math.max(topS,facS)+(isSmall?.6:0)||(!isSmall&&topS<TH);
+    if(wins&&!(isSmall&&(topS>=TH||facS>=TH))){
+      if(id==='experience')ctx.topic='cab';
+      return pack(I[id](l),(id==='help'||id==='who')?'TOPICS':(CH[l][id]||CH[l].gen));
+    }
+  }
+  let topics=tp.filter(x=>x[1]>=TH).slice(0,2).map(x=>x[0]);
+  let facets=fc.filter((x,i)=>x[1]>=(i?2:TH)).slice(0,2).map(x=>x[0]);
+  if(e.age==null&&(e.adults||e.kids)&&facets.includes('age'))facets=facets.map(f=>f==='age'?'price':f).filter((f,i,a)=>a.indexOf(f)===i);
+  if(e.age!=null&&!facets.includes('age')&&!facets.includes('price'))facets.unshift('age');
+  if(!topics.length&&facets.length){
+    const f=facets[0];
+    if(ctx.topic&&T[ctx.topic][f])topics=[ctx.topic];
+    else if(FACET_DEFAULT_TOPIC[f])topics=[FACET_DEFAULT_TOPIC[f]];
+    else if(FACET_ONLY[f]){ctx.topic=null;return pack(FACET_ONLY[f](l,e),f==='incl'?CH[l].incl:CH[l].gen)}
+  }
+  if(e.month&&!facets.length&&topics.includes('cab'))facets=['season'];
+  if(!topics.length&&!facets.length){
+    if((e.people||e.adults||e.kids||e.age!=null||e.month)&&ctx.topic){topics=[ctx.topic];facets=[e.age!=null?'age':e.month?'season':'price']}
+    else if(e.month||e.now){topics=['cab'];facets=['season']}
+    else return fallback(l,it,tp);
+  }
+  const parts=[];
+  for(const t of topics){const fs=facets.filter(f=>T[t][f]);if(!fs.length)parts.push(T[t].over(l,e));else fs.forEach(f=>parts.push(T[t][f](l,e)))}
+  ctx.topic=topics[topics.length-1];
+  return pack(parts.slice(0,3).join('\n\n— — —\n\n'),CH[l][ctx.topic]||CH[l].gen);
+}
+function fallback(l,it,tp){
+  const map=P(l,{es:{cab:'Cuéntame de la cabalgata',domo:'¿Qué incluye el domo?',trans:'Transporte privado',food:'¿Qué comidas incluye?',weather:'¿Cómo es el clima?',pack:'¿Qué debo llevar?'},
+    en:{cab:'Tell me about the horseback ride',domo:'What does the dome include?',trans:'Private transport',food:'What meals are included?',weather:'What’s the weather like?',pack:'What should I bring?'},
+    pt:{cab:'Fale sobre a cavalgada',domo:'O que o domo inclui?',trans:'Transporte privado',food:'Quais refeições estão incluídas?',weather:'Como está o clima?',pack:'O que devo levar?'},
+    zh:{cab:'介绍一下骑马',domo:'圆顶包括什么？',trans:'私人交通',food:'包含哪些餐食？',weather:'天气怎么样？',pack:'需要带什么？'}});
+  const sug=[];[...tp,...it].forEach(([k])=>{if(map[k]&&!sug.includes(map[k]))sug.push(map[k])});
+  return {text:P(l,{es:`Mmm, no estoy seguro de haber entendido 🤔. Puedo responder sobre los **domos**, la **cabalgata**, **precios**, **comidas**, **clima**, **qué llevar**, **transporte**, **normas** y **emergencias**.\n\nIntenta con otras palabras o elige un tema. Para algo más específico, consulta en recepción.`,
+    en:`Hmm, I’m not sure I understood 🤔. I can answer about **domes**, the **horseback ride**, **prices**, **meals**, **weather**, **what to bring**, **transport**, **rules** and **emergencies**.\n\nTry other words or pick a topic. For anything more specific, ask at reception.`,
+    pt:`Hmm, não tenho certeza se entendi 🤔. Posso responder sobre **domos**, **cavalgada**, **preços**, **refeições**, **clima**, **o que levar**, **transporte**, **regras** e **emergências**.\n\nTente com outras palavras ou escolha um tema. Para algo mais específico, consulte a recepção.`,
+    zh:`抱歉，我不太确定您的意思 🤔。我可以回答关于**圆顶住宿**、**骑马**、**价格**、**餐食**、**天气**、**携带物品**、**交通**、**规定**和**紧急情况**的问题。\n\n请换个说法或选择一个主题。更具体的问题请咨询前台。`}),chips:sug.length?sug.slice(0,3):'TOPICS'};
+}
+
+/* =========================================================
+   INTERFAZ
+   ========================================================= */
+const UI={
+  es:{name:'Español',ph:'Escribe tu pregunta…',status:'En línea · Nature’s Towers',typing:'Natura está escribiendo…',reset:'Nuevo chat',send:'Enviar',today:'Hoy',lang:'Idioma',
+    welcome:()=>`${hourGreet('es')}! 👋🌿 Bienvenido/a a **Nature’s Towers**.\n\nSoy **Natura**, tu asistente virtual en Torres del Paine. Escríbeme tu pregunta como quieras o elige un tema.\n\nTambién respondo en English · Português · 中文.`,
+    topics:[['🏕️','Mi domo','Cuéntame del domo'],['🐎','Cabalgata','Cuéntame de la cabalgata'],['💵','Precios','¿Cuáles son los precios?'],['🍽️','Comidas','¿Qué comidas incluye?'],['🌦️','Clima','¿Cómo es el clima?'],['🎒','Qué llevar','¿Qué debo llevar?'],['🚐','Transporte','Transporte privado'],['🆘','Emergencia','Emergencia','sos']],
+    foot:'Natura · Nature’s Towers × Dreamers Travel · prototipo académico'},
+  en:{name:'English',ph:'Type your question…',status:'Online · Nature’s Towers',typing:'Natura is typing…',reset:'New chat',send:'Send',today:'Today',lang:'Language',
+    welcome:()=>`${hourGreet('en')}! 👋🌿 Welcome to **Nature’s Towers**.\n\nI’m **Natura**, your virtual assistant in Torres del Paine. Ask me anything in your own words, or pick a topic.\n\nI also answer in Español · Português · 中文.`,
+    topics:[['🏕️','My dome','Tell me about the dome'],['🐎','Horse ride','Tell me about the horseback ride'],['💵','Prices','What are the prices?'],['🍽️','Meals','What meals are included?'],['🌦️','Weather','What’s the weather like?'],['🎒','What to bring','What should I bring?'],['🚐','Transport','Private transport'],['🆘','Emergency','Emergency','sos']],
+    foot:'Natura · Nature’s Towers × Dreamers Travel · academic prototype'},
+  pt:{name:'Português',ph:'Escreva sua pergunta…',status:'Online · Nature’s Towers',typing:'Natura está digitando…',reset:'Nova conversa',send:'Enviar',today:'Hoje',lang:'Idioma',
+    welcome:()=>`${hourGreet('pt')}! 👋🌿 Bem-vindo/a à **Nature’s Towers**.\n\nSou a **Natura**, sua assistente virtual em Torres del Paine. Escreva sua pergunta do seu jeito ou escolha um tema.\n\nTambém respondo em Español · English · 中文.`,
+    topics:[['🏕️','Meu domo','Fale sobre o domo'],['🐎','Cavalgada','Fale sobre a cavalgada'],['💵','Preços','Quais são os preços?'],['🍽️','Refeições','Quais refeições estão incluídas?'],['🌦️','Clima','Como está o clima?'],['🎒','O que levar','O que devo levar?'],['🚐','Transporte','Transporte privado'],['🆘','Emergência','Emergência','sos']],
+    foot:'Natura · Nature’s Towers × Dreamers Travel · protótipo acadêmico'},
+  zh:{name:'中文',ph:'请输入您的问题…',status:'在线 · Nature’s Towers',typing:'Natura 正在输入…',reset:'新对话',send:'发送',today:'今天',lang:'语言',
+    welcome:()=>`${hourGreet('zh')}！👋🌿 欢迎来到 **Nature’s Towers**。\n\n我是**Natura**，您在百内国家公园的虚拟助手。请直接输入问题，或选择一个主题。\n\n也可以用 Español · English · Português 提问。`,
+    topics:[['🏕️','我的圆顶','介绍一下圆顶住宿'],['🐎','骑马','介绍一下骑马'],['💵','价格','价格是多少？'],['🍽️','餐食','包含哪些餐食？'],['🌦️','天气','天气怎么样？'],['🎒','携带物品','需要带什么？'],['🚐','交通','私人交通'],['🆘','紧急','紧急情况','sos']],
+    foot:'Natura · Nature’s Towers × Dreamers Travel · 学术原型'}
+};
+const navL=(navigator.language||'es').toLowerCase();
+let LANG=navL.startsWith('zh')?'zh':navL.startsWith('pt')?'pt':navL.startsWith('en')?'en':'es';
+const log=document.getElementById('log'), q=document.getElementById('q'), form=document.getElementById('form');
+const langBtn=document.getElementById('langBtn'), langMenu=document.getElementById('langMenu');
+let history=[], busy=false;
+const KEY='natura-chat-v2';
+function save(){try{localStorage.setItem(KEY,JSON.stringify({lang:LANG,history:history.slice(-60),topic:ctx.topic}))}catch(_){}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.history)&&s.history.length){LANG=LANGS.includes(s.lang)?s.lang:LANG;history=s.history;ctx.topic=s.topic||null;return true}}catch(_){}return false}
+
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function md(s){return s.split('\n').map(line=>{
+  const h=esc(line).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/(US\$[\d,]+)/g,'<span class="num">$1</span>');
+  if(/^• /.test(line))return `<div class="li"><span>${h.slice(2)}</span></div>`;
+  if(line.trim()==='')return '<div class="gap"></div>';
+  return `<div>${h}</div>`}).join('')}
+function hhmm(t){const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+const LEAF='<svg viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.2-6.1C9.6 14.4 12 13 13 11"/></svg>';
+function renderMsg(m,animate){
+  const row=document.createElement('div');row.className='row '+(m.who==='me'?'me':'bot')+(animate?' new':'');
+  if(m.who==='me')row.innerHTML=`<span class="time">${hhmm(m.t)}</span><div class="bub">${esc(m.text)}</div>`;
+  else row.innerHTML=`<span class="mini" aria-hidden="true">${LEAF}</span><div class="bub${m.sos?' sos':''}">${md(m.text)}</div><span class="time">${hhmm(m.t)}</span>`;
+  log.appendChild(row);
+}
+function renderChips(chips){
+  log.querySelectorAll('.chips,.topics').forEach(el=>el.remove());if(!chips)return;
+  if(chips==='TOPICS'){const g=document.createElement('div');g.className='topics';
+    g.innerHTML=UI[LANG].topics.map(([e,lb,qq,c])=>`<button type="button" class="topic${c?' '+c:''}" data-q="${esc(qq)}"><span class="e" aria-hidden="true">${e}</span>${esc(lb)}</button>`).join('');log.appendChild(g);return}
+  const d=document.createElement('div');d.className='chips';
+  d.innerHTML=chips.map(c=>`<button type="button" class="chip" data-q="${esc(c)}">${esc(c)}</button>`).join('');log.appendChild(d);
+}
+function scrollEnd(){requestAnimationFrame(()=>{log.scrollTop=log.scrollHeight})}
+function renderAll(){
+  log.innerHTML=`<div class="day">${UI[LANG].today}</div>`;history.forEach(m=>renderMsg(m,false));
+  const last=[...history].reverse().find(m=>m.who==='bot');renderChips(last?last.chips:'TOPICS');scrollEnd();
+}
+function applyLang(){
+  const u=UI[LANG];document.documentElement.lang=LANG==='zh'?'zh-CN':LANG==='pt'?'pt-BR':LANG;
+  q.placeholder=u.ph;q.setAttribute('aria-label',u.ph);
+  document.getElementById('status').textContent=u.status;document.getElementById('foot').textContent=u.foot;
+  const r=document.getElementById('reset');r.setAttribute('aria-label',u.reset);r.title=u.reset;
+  document.getElementById('sendBtn').setAttribute('aria-label',u.send);log.setAttribute('aria-label',u.today);
+  document.getElementById('langCode').textContent=LANG==='zh'?'中文':LANG.toUpperCase();langBtn.setAttribute('aria-label',u.lang+': '+u.name);
+  langMenu.innerHTML=LANGS.map(c=>`<button type="button" role="menuitemradio" aria-checked="${c===LANG}" data-setlang="${c}">${UI[c].name}<small>${c==='zh'?'中文':c.toUpperCase()}</small></button>`).join('');
+}
+function start(){history=[{who:'bot',text:UI[LANG].welcome(),t:Date.now(),chips:'TOPICS'}];ctx.topic=null;renderAll();save()}
+function ask(text){
+  text=text.trim();if(!text||busy)return;
+  const dl=detectLang(norm(text),LANG);if(dl!==LANG){LANG=dl;applyLang()}
+  const me={who:'me',text,t:Date.now()};history.push(me);renderChips(null);renderMsg(me,true);scrollEnd();
+  q.value='';busy=true;
+  let r;try{r=respond(text,LANG)}catch(err){r=fallback(LANG,[],[])}
+  const typ=document.createElement('div');typ.className='row bot new';typ.innerHTML=`<span class="mini" aria-hidden="true">${LEAF}</span><div class="bub typing" aria-label="${esc(UI[LANG].typing)}"><i></i><i></i><i></i></div>`;
+  log.appendChild(typ);scrollEnd();
+  setTimeout(()=>{typ.remove();const m={who:'bot',text:r.text,sos:!!r.sos,t:Date.now(),chips:r.chips};history.push(m);renderMsg(m,true);renderChips(r.chips);scrollEnd();busy=false;save()},Math.min(450+r.text.length*2,1300));
+}
+function setLang(c){if(!LANGS.includes(c)||c===LANG){closeMenu();return}LANG=c;applyLang();closeMenu();if(history.length<=1)start();else{renderAll();save()}}
+function closeMenu(){langMenu.hidden=true;langBtn.setAttribute('aria-expanded','false')}
+langBtn.addEventListener('click',ev=>{ev.stopPropagation();const open=langMenu.hidden;langMenu.hidden=!open;langBtn.setAttribute('aria-expanded',String(open));if(open)langMenu.querySelector('[aria-checked="true"]').focus()});
+langMenu.addEventListener('click',ev=>{const b=ev.target.closest('[data-setlang]');if(b)setLang(b.dataset.setlang)});
+document.addEventListener('click',ev=>{if(!langMenu.hidden&&!ev.target.closest('.langwrap'))closeMenu()});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!langMenu.hidden){closeMenu();langBtn.focus()}});
+form.addEventListener('submit',ev=>{ev.preventDefault();ask(q.value)});
+log.addEventListener('click',ev=>{const b=ev.target.closest('[data-q]');if(b)ask(b.dataset.q)});
+document.getElementById('reset').addEventListener('click',()=>{start();q.focus()});
+
+if(load()){applyLang();renderAll()}else{applyLang();start()}
+window.__natura={respond,ctx,detectLang,norm,CH,UI,fallback};
+})();
+</script>
+
+</body>
+</html>
